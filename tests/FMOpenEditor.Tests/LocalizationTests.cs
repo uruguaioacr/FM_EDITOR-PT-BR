@@ -34,13 +34,19 @@ public class LocalizationTests
     [Fact]
     public void Every_translation_formats_without_errors()
     {
-        var args = Enumerable.Range(0, 10).Select(i => (object)i).ToArray();
+        var args = Enumerable.Range(0, 10).Select(_ => (object)new AnyFormat()).ToArray();
         foreach (var (key, value) in Loc.Entries(Loc.PortugueseBrazil))
         {
             if (!Placeholder.IsMatch(value)) continue;
             var ex = Record.Exception(() => string.Format(value, args));
             Assert.True(ex is null, $"'{key}': {ex?.Message}");
         }
+    }
+
+    /// <summary>Accepts any format specifier ("N0", "X", "T"), so only the braces themselves are tested.</summary>
+    private sealed class AnyFormat : IFormattable
+    {
+        public string ToString(string? format, IFormatProvider? provider) => "x";
     }
 
     [Fact]
