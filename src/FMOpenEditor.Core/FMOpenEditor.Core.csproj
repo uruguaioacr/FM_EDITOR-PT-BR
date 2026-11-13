@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Model\catalog.generated.json" LogicalName="catalog.generated.json" />
-    <EmbeddedResource Include="Localization\i18n.pt-BR.json" LogicalName="i18n.pt-BR.json" />
+    <!-- Not named *.pt-BR.json: MSBuild would treat that as a culture resource and move it to a satellite assembly. -->
+    <EmbeddedResource Include="Localization\translation-ptbr.json" LogicalName="i18n.pt-BR.json" WithCulture="false" />
   </ItemGroup>
 </Project>
