@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using FMOpenEditor.Core.Editing;
 using FMOpenEditor.Core.Model;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.ViewModels;
 
@@ -32,7 +33,7 @@ public sealed partial class WatchListViewModel
         Items.Clear();
         foreach (var g in _session.Watcher.Watches.GroupBy(w => w.Entity))
         {
-            var mode = g.First().Mode == WatchMode.Freeze ? "Frozen" : "Only up";
+            var mode = g.First().Mode == WatchMode.Freeze ? Loc.T("Frozen") : Loc.T("Only up");
             Items.Add(new WatchedEntity(g.Key, _session.TryRead(g.Key, PropertyCatalog.DisplayName) as string ?? g.Key.ToString(),
                 mode, g.Count(), g.First().Mode == WatchMode.Freeze));
         }

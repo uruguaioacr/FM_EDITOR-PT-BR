@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMOpenEditor.App.Services;
 using FMOpenEditor.Core.Graphics;
+using FMOpenEditor.Core.Localization;
 using FMOpenEditor.Core.Model;
 using FMOpenEditor.Core.Search;
 
@@ -10,9 +11,9 @@ namespace FMOpenEditor.App.ViewModels;
 /// <summary>A currency in the picker: "€  Euro" on the quick buttons, the full name in the list.</summary>
 public sealed record CurrencyOption(CurrencyDisplay Currency)
 {
-    public string Short => Currency.Symbol.Length > 0 ? $"{Currency.Symbol}  {Currency.ShortName}" : Currency.ShortName;
-    public string Mark => Currency.Symbol.Length > 0 ? Currency.Symbol : Currency.ShortName;
-    public string Name => Currency.Name;
+    public string Short => Currency.Symbol.Length > 0 ? $"{Currency.Symbol}  {Loc.T(Currency.ShortName)}" : Loc.T(Currency.ShortName);
+    public string Mark => Currency.Symbol.Length > 0 ? Currency.Symbol : Loc.T(Currency.ShortName);
+    public string Name => Loc.T(Currency.Name);
 }
 
 /// <summary>Appearance, currency and graphics preferences, shown in the top-bar settings panel.</summary>
@@ -43,7 +44,22 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string _currencySummary = "";
     [ObservableProperty] private string? _currencyHint;
 
-    public string MoreCurrenciesLabel => ShowMoreCurrencies ? "Less" : "More…";
+    public string MoreCurrenciesLabel => ShowMoreCurrencies ? Loc.T("Less") : Loc.T("More…");
+
+    /// <summary>Interface languages; a change is saved and applies the next time the editor starts.</summary>
+    public IReadOnlyList<LanguageOption> Languages => Loc.Languages;
+    [ObservableProperty] private LanguageOption? _selectedLanguage;
+    [ObservableProperty] private string? _languageHint;
+
+    partial void OnSelectedLanguageChanged(LanguageOption? value)
+    {
+        if (value is null || value.Code == _settings.Language) return;
+        _settings.Language = value.Code;
+        _settings.Save();
+        LanguageHint = value.Code == Loc.Language ? null
+            : value.Code == Loc.PortugueseBrazil ? "Reinicie o FM OpenEditor para usar o português."
+            : "Restart FM OpenEditor to switch to English.";
+    }
 
     public bool HasCustomFolder => !string.IsNullOrWhiteSpace(GraphicsFolder);
 
@@ -58,6 +74,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _showPictures = _settings.ShowPictures;
         _reduceMotion = _settings.ReduceMotion;
         _graphicsFolder = _settings.GraphicsFolder;
+        _selectedLanguage = Loc.Languages.FirstOrDefault(l => l.Code == Loc.Language);
         ImageService.Instance.Changed += Describe;
         Describe();
     }
@@ -110,7 +127,7 @@ public sealed partial class SettingsViewModel : ObservableObject
                      ?? CommonCurrencies.FirstOrDefault(c => c.Currency.Id == _settings.CurrencyId)?.Currency
                      ?? Money.Pound;
         Money.Current = wanted;
-        CurrencyHint = fromSave.Count == 0 ? "Connect to a save to choose from every currency in it." : null;
+        CurrencyHint = fromSave.Count == 0 ? Loc.T("Connect to a save to choose from every currency in it.") : null;
         SyncCurrency();
     }
 
@@ -166,9 +183,10 @@ public sealed partial class SettingsViewModel : ObservableObject
         FilterCurrencies();
         var mark = new CurrencyOption(current).Mark;
         CurrencySummary = current.Id == Money.Pound.Id
-            ? $"Amounts are shown in {current.Name}, the currency the game stores them in."
-            : $"Amounts are shown in {current.Name}. £1 = {current.Rate.ToString(current.Rate >= 100 ? "N0" : "0.##", System.Globalization.CultureInfo.InvariantCulture)} {mark}, " +
-              (_allCurrencies.Count > 0 ? "the rate in your save." : "an approximate rate until a save is open.");
+            ? Loc.F("Amounts are shown in {0}, the currency the game stores them in.", Loc.T(current.Name))
+            : Loc.F("Amounts are shown in {0}. £1 = {1} {2}, ", Loc.T(current.Name),
+                  current.Rate.ToString(current.Rate >= 100 ? "N0" : "0.##", System.Globalization.CultureInfo.InvariantCulture), mark) +
+              (_allCurrencies.Count > 0 ? Loc.T("the rate in your save.") : Loc.T("an approximate rate until a save is open."));
     }
 
     [RelayCommand] private void UseDetectedFolder() => GraphicsFolder = null;
@@ -181,17 +199,17 @@ public sealed partial class SettingsViewModel : ObservableObject
         var roots = images.Library.Roots.Count > 0 ? images.Library.Roots : GraphicsLocator.Find(null, _settings.GraphicsFolder);
         FolderSummary = roots.Count switch
         {
-            0 when HasCustomFolder => "That folder doesn't exist. Pictures are hidden until it does.",
-            0 => "No Football Manager graphics folder found. Names are shown on their own.",
+            0 when HasCustomFolder => Loc.T("That folder doesn't exist. Pictures are hidden until it does."),
+            0 => Loc.T("No Football Manager graphics folder found. Names are shown on their own."),
             _ => string.Join(Environment.NewLine, roots),
         };
 
         var lib = images.Library;
-        LibrarySummary = images.IsIndexing ? "Reading graphics packs…"
-            : !_settings.ShowPictures ? "Pictures are switched off."
-            : !images.Active ? "Pictures appear once you connect to a save."
-            : lib.IsEmpty ? "No packs found in the graphics folder."
-            : $"{lib.CountOf("person"):N0} faces · {lib.CountOf("club"):N0} club badges · " +
-              $"{lib.CountOf("comp"):N0} competitions · {lib.CountOf("nation"):N0} nations, from {lib.PackCount:N0} packs";
+        LibrarySummary = images.IsIndexing ? Loc.T("Reading graphics packs…")
+            : !_settings.ShowPictures ? Loc.T("Pictures are switched off.")
+            : !images.Active ? Loc.T("Pictures appear once you connect to a save.")
+            : lib.IsEmpty ? Loc.T("No packs found in the graphics folder.")
+            : Loc.F("{0:N0} faces · {1:N0} club badges · {2:N0} competitions · {3:N0} nations, from {4:N0} packs",
+                lib.CountOf("person"), lib.CountOf("club"), lib.CountOf("comp"), lib.CountOf("nation"), lib.PackCount);
     }
 }

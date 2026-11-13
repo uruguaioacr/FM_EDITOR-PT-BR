@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMOpenEditor.Core.Memory;
 using FMOpenEditor.Core.Research;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.ViewModels.Research;
 
@@ -28,10 +29,10 @@ public sealed partial class MemorySearchViewModel(ResearchContext context) : Obs
     [RelayCommand]
     private async Task FindString()
     {
-        if (string.IsNullOrEmpty(Text)) { Status = "Type a name to search for, exactly as the game shows it."; return; }
+        if (string.IsNullOrEmpty(Text)) { Status = Loc.T("Type a name to search for, exactly as the game shows it."); return; }
         var enc = Encoding == "UTF-8" ? System.Text.Encoding.UTF8 : System.Text.Encoding.Unicode;
         var text = Text;
-        await Run($"Searching for \"{text}\"…", () =>
+        await Run(Loc.F("Searching for \"{0}\"…", text), () =>
         {
             var hits = ReferenceScanner.FindString(context.Memory, text, enc);
             var peek = new byte[96];
@@ -39,23 +40,23 @@ public sealed partial class MemorySearchViewModel(ResearchContext context) : Obs
             {
                 var detail = context.Memory.Read(a, peek) ? RecordDiff.PeekString(peek) ?? "" : "";
                 return new AddressRow(a, context.Describe(a), detail);
-            }).ToList(), $"{hits.Count:N0} match(es). Next: select one and find pointers to it.");
+            }).ToList(), Loc.F("{0:N0} match(es). Next: select one and find pointers to it.", hits.Count));
         });
     }
 
     [RelayCommand]
     private async Task FindPointers()
     {
-        if (!ResearchFormat.TryHex(PointerTarget, out var target, context)) { Status = "Enter the target address in hex."; return; }
+        if (!ResearchFormat.TryHex(PointerTarget, out var target, context)) { Status = Loc.T("Enter the target address in hex."); return; }
         if (!ResearchFormat.TryHex(MaxOffset, out var max) || max < 0) max = 0;
-        await Run($"Searching for pointers to {ResearchFormat.Hex(target)}…", () =>
+        await Run(Loc.F("Searching for pointers to {0}…", ResearchFormat.Hex(target)), () =>
         {
             var hits = ReferenceScanner.FindPointers(context.Memory, (nint)target, max);
             var rows = hits.Select(h => new AddressRow(h.Address, context.Describe(h.Address),
-                (h.Offset == 0 ? "→ target" : $"→ target - 0x{h.Offset:X}") +
-                (context.InModule(h.Address) ? "  ★ inside the module: candidate global/root" : ""))).ToList();
+                (h.Offset == 0 ? Loc.T("→ target") : Loc.F("→ target - 0x{0:X}", h.Offset)) +
+                (context.InModule(h.Address) ? Loc.T("  ★ inside the module: candidate global/root") : ""))).ToList();
             var inModule = hits.Count(h => context.InModule(h.Address));
-            return (rows, $"{hits.Count:N0} pointer(s), {inModule} inside {context.ModuleName}.");
+            return (rows, Loc.F("{0:N0} pointer(s), {1} inside {2}.", hits.Count, inModule, context.ModuleName));
         });
     }
 
@@ -87,7 +88,7 @@ public sealed partial class MemorySearchViewModel(ResearchContext context) : Obs
             var (rows, summary) = await Task.Run(work);
             Results.Clear();
             foreach (var r in rows.Take(MaxShown)) Results.Add(r);
-            Status = rows.Count > MaxShown ? $"{summary} Showing the first {MaxShown:N0}." : summary;
+            Status = rows.Count > MaxShown ? summary + Loc.F(" Showing the first {0:N0}.", MaxShown) : summary;
         }
         catch (Exception ex) { Status = ex.Message; }
         finally { IsBusy = false; }

@@ -1,4 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:l="using:FMOpenEditor.App.Localization"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:FMOpenEditor.App.ViewModels"
              xmlns:c="using:FMOpenEditor.App.Controls"
@@ -10,20 +11,20 @@
       <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,16">
         <Border Classes="tile" Margin="0,2,14,0" VerticalAlignment="Top"><c:Icon Kind="snow" Size="19" /></Border>
         <StackPanel Grid.Column="1" Spacing="4">
-          <TextBlock Classes="h1" Text="Watch list" />
+          <TextBlock Classes="h1" Text="{l:T 'Watch list'}" />
           <TextBlock Classes="muted" TextWrapping="Wrap" MaxWidth="720" HorizontalAlignment="Left"
-                     Text="Frozen attributes are restored whenever the game changes them. Only-up keeps improvements and undoes declines. Checked every 2 seconds while connected. Add people with a right-click in any list." />
+                     Text="{l:T 'Frozen attributes are restored whenever the game changes them. Only-up keeps improvements and undoes declines. Checked every 2 seconds while connected. Add people with a right-click in any list.'}" />
         </StackPanel>
         <Button Grid.Column="2" Command="{Binding ClearCommand}" VerticalAlignment="Top">
-          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="discard" Size="15" /><TextBlock Text="Remove all" /></StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="discard" Size="15" /><TextBlock Text="{l:T 'Remove all'}" /></StackPanel>
         </Button>
       </Grid>
 
       <Panel>
         <StackPanel IsVisible="{Binding !Items.Count}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
           <c:Mascot Width="110" Height="110" HorizontalAlignment="Center" />
-          <TextBlock Classes="h2" Text="Nobody is being watched yet" HorizontalAlignment="Center" />
-          <TextBlock Classes="muted" Text="Right-click a player in any list and choose Freeze attributes." HorizontalAlignment="Center" />
+          <TextBlock Classes="h2" Text="{l:T 'Nobody is being watched yet'}" HorizontalAlignment="Center" />
+          <TextBlock Classes="muted" Text="{l:T 'Right-click a player in any list and choose Freeze attributes.'}" HorizontalAlignment="Center" />
         </StackPanel>
       <ScrollViewer>
         <ItemsControl ItemsSource="{Binding Items}">
@@ -42,8 +43,8 @@
                       <TextBlock Text="{Binding Mode}" FontSize="12" FontWeight="Medium" />
                     </StackPanel>
                   </Border>
-                  <TextBlock Grid.Column="3" Text="{Binding Count, StringFormat='{}{0} attributes'}" Classes="muted num" VerticalAlignment="Center" />
-                  <Button Grid.Column="4" Classes="ghost" Content="Remove" Command="{Binding #Root.((vm:WatchListViewModel)DataContext).RemoveCommand}"
+                  <TextBlock Grid.Column="3" Classes="muted num" VerticalAlignment="Center"><Run Text="{Binding Count, Mode=OneWay}" /><Run Text="{l:T ' attributes'}" /></TextBlock>
+                  <Button Grid.Column="4" Classes="ghost" Content="{l:T 'Remove'}" Command="{Binding #Root.((vm:WatchListViewModel)DataContext).RemoveCommand}"
                           CommandParameter="{Binding}" />
                 </Grid>
               </Border>

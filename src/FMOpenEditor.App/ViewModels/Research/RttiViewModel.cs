@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMOpenEditor.Core.Research;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.ViewModels.Research;
 
@@ -11,7 +12,7 @@ public sealed partial class RttiRow(RttiClass cls, ResearchContext context) : Ob
     public string Name => Class.Name;
     public string VtableText => Class.PrimaryVtable is { } v
         ? context.Describe(v.Address) + (Class.Vtables.Count > 1 ? $" (+{Class.Vtables.Count - 1})" : "")
-        : "no vtable found";
+        : Loc.T("no vtable found");
 
     [ObservableProperty] private string _instancesText = "";
 }
@@ -36,7 +37,7 @@ public sealed partial class RttiViewModel(ResearchContext context) : ObservableO
     private async Task FindClasses()
     {
         IsBusy = true;
-        Status = $"Reading {context.ModuleName} and looking for RTTI…";
+        Status = Loc.F("Reading {0} and looking for RTTI…", context.ModuleName);
         try
         {
             var classes = await Task.Run(() => RttiScanner.FindClasses(context.Memory, context.ModuleBase, context.ModuleSize));
@@ -44,8 +45,8 @@ public sealed partial class RttiViewModel(ResearchContext context) : ObservableO
             ApplyFilter();
             var withVtable = classes.Count(c => c.Vtables.Count > 0);
             Status = classes.Count == 0
-                ? "No RTTI found. The module may be built without it; use strings and pointers instead."
-                : $"{classes.Count:N0} classes, {withVtable:N0} with a vtable. Filter by name (try person, player, club, staff), then count objects.";
+                ? Loc.T("No RTTI found. The module may be built without it; use strings and pointers instead.")
+                : Loc.F("{0:N0} classes, {1:N0} with a vtable. Filter by name (try person, player, club, staff), then count objects.", classes.Count, withVtable);
         }
         catch (Exception ex) { Status = ex.Message; }
         finally { IsBusy = false; }
@@ -66,21 +67,21 @@ public sealed partial class RttiViewModel(ResearchContext context) : ObservableO
     private async Task CountListed()
     {
         var rows = Classes.Where(r => r.Class.PrimaryVtable is not null).ToList();
-        if (rows.Count == 0) { Status = "Nothing to count: find classes first, or no listed class has a vtable."; return; }
+        if (rows.Count == 0) { Status = Loc.T("Nothing to count: find classes first, or no listed class has a vtable."); return; }
         await Count(rows, showInstancesOf: rows.Count == 1 ? rows[0] : null);
     }
 
     [RelayCommand]
     private async Task CountSelected()
     {
-        if (SelectedClass is not { Class.PrimaryVtable: not null } row) { Status = "Select a class with a vtable."; return; }
+        if (SelectedClass is not { Class.PrimaryVtable: not null } row) { Status = Loc.T("Select a class with a vtable."); return; }
         await Count([row], row);
     }
 
     private async Task Count(List<RttiRow> rows, RttiRow? showInstancesOf)
     {
         IsBusy = true;
-        Status = $"Scanning the heap for objects of {rows.Count:N0} class(es)…";
+        Status = Loc.F("Scanning the heap for objects of {0:N0} class(es)…", rows.Count);
         try
         {
             var vtables = rows.Select(r => r.Class.PrimaryVtable!).DistinctBy(v => v.Address).ToList();
@@ -88,7 +89,7 @@ public sealed partial class RttiViewModel(ResearchContext context) : ObservableO
             foreach (var r in rows)
             {
                 var n = result.Counts.GetValueOrDefault(r.Class.PrimaryVtable!.Address);
-                r.InstancesText = $"{n:N0} objects";
+                r.InstancesText = Loc.F("{0:N0} objects", n);
             }
             if (showInstancesOf is not null)
             {
@@ -98,8 +99,8 @@ public sealed partial class RttiViewModel(ResearchContext context) : ObservableO
             }
             var top = rows.OrderByDescending(r => result.Counts.GetValueOrDefault(r.Class.PrimaryVtable!.Address)).First();
             Status = rows.Count == 1
-                ? $"{top.Name}: {top.InstancesText}. Each address is an object's base. Use one as the record base, or add several to the correlator."
-                : $"Counted {rows.Count:N0} classes. Most objects: {top.Name} ({top.InstancesText}). A class with roughly as many objects as the game has people is a good lead.";
+                ? Loc.F("{0}: {1}. Each address is an object's base. Use one as the record base, or add several to the correlator.", top.Name, top.InstancesText)
+                : Loc.F("Counted {0:N0} classes. Most objects: {1} ({2}). A class with roughly as many objects as the game has people is a good lead.", rows.Count, top.Name, top.InstancesText);
         }
         catch (Exception ex) { Status = ex.Message; }
         finally { IsBusy = false; }

@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using FMOpenEditor.Core.Editing;
 using FMOpenEditor.Core.Model;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.ViewModels;
 
@@ -35,10 +36,10 @@ public sealed partial class EntityEditorViewModel : ObservableObject
     public bool IsOnlyUp => _session.Watcher.ModeOf(Entity) == WatchMode.OnlyUp;
 
     public int UnsupportedCount { get; }
-    public string? UnsupportedText => UnsupportedCount > 0 ? $"{UnsupportedCount} fields not mapped for this game version yet" : null;
+    public string? UnsupportedText => UnsupportedCount > 0 ? Loc.F("{0} fields not mapped for this game version yet", UnsupportedCount) : null;
 
     /// <summary>Record base address, for contributors working out offsets in Research.</summary>
-    public string? AddressText => Entity.Address != 0 ? $"Record at 0x{Entity.Address:X}" : null;
+    public string? AddressText => Entity.Address != 0 ? Loc.F("Record at 0x{0:X}", Entity.Address) : null;
 
     public EntityEditorViewModel(EditorSession session, Entity entity) : this(session, entity, null, null) { }
 
@@ -57,7 +58,7 @@ public sealed partial class EntityEditorViewModel : ObservableObject
         Groups = supported
             .Where(p => p.Key != PropertyCatalog.DisplayName)
             .GroupBy(p => p.Category)
-            .Select(g => new PropertyGroupViewModel(g.Key, g.Select(p => PropertyEditorViewModel.Create(session, entity, p, open)).ToList()))
+            .Select(g => new PropertyGroupViewModel(Loc.T(g.Key), g.Select(p => PropertyEditorViewModel.Create(session, entity, p, open)).ToList()))
             .ToList();
         var related = relations is null || open is null
             ? []
@@ -83,7 +84,7 @@ public sealed partial class EntityEditorViewModel : ObservableObject
         {
             EntityKind.Player or EntityKind.Staff => string.Join("  ·  ", new[]
             {
-                Fmt("Age") is { Length: > 0 } age ? $"{age} years" : "",
+                Fmt("Age") is { Length: > 0 } age ? Loc.F("{0} years", age) : "",
                 Fmt("Contract.Club"),
                 Fmt("Nation"),
                 Entity.Kind == EntityKind.Staff ? Fmt("Role") : "",
@@ -93,8 +94,8 @@ public sealed partial class EntityEditorViewModel : ObservableObject
         };
         WatchState = _session.Watcher.ModeOf(Entity) switch
         {
-            WatchMode.Freeze => "Attributes frozen",
-            WatchMode.OnlyUp => "Attributes can only go up",
+            WatchMode.Freeze => Loc.T("Attributes frozen"),
+            WatchMode.OnlyUp => Loc.T("Attributes can only go up"),
             _ => null,
         };
         OnPropertyChanged(nameof(IsFrozen));

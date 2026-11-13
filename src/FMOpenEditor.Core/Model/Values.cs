@@ -1,3 +1,4 @@
+using FMOpenEditor.Core.Localization;
 using System.Globalization;
 using System.Text.Json;
 
@@ -21,7 +22,7 @@ public static class Values
             {
                 ValueKind.Date or ValueKind.Reference => null,
                 ValueKind.Text => "",
-                _ => throw new FormatException($"{def.Label} needs a value."),
+                _ => throw new FormatException(Loc.F("{0} needs a value.", def.DisplayLabel)),
             };
         }
 
@@ -43,7 +44,7 @@ public static class Values
                 DateTime dt => DateOnly.FromDateTime(dt),
                 DateTimeOffset dto => DateOnly.FromDateTime(dto.Date),
                 string s => DateOnly.Parse(s, Inv),
-                _ => throw new FormatException($"{def.Label} needs a date."),
+                _ => throw new FormatException(Loc.F("{0} needs a date.", def.DisplayLabel)),
             },
             ValueKind.Reference => raw is int i && i < 0 ? null : (int)ToDouble(raw),
             _ => raw,
@@ -94,10 +95,10 @@ public static class Values
         {
             null => def.Kind == ValueKind.Reference ? "—" : "",
             long money when def.Kind == ValueKind.Money => FormatMoney(money),
-            int idx when def.Kind == ValueKind.Choice && def.Choices is { } c && idx >= 0 && idx < c.Count => c[idx],
+            int idx when def.Kind == ValueKind.Choice && def.Choices is { } c && idx >= 0 && idx < c.Count => Loc.T(c[idx]),
             int id when def.Kind == ValueKind.Reference && nameOf is not null && def.RefKind is { } k => nameOf(k, id),
-            bool b => b ? "Yes" : "No",
-            DateOnly d => d.ToString("dd MMM yyyy", Inv),
+            bool b => b ? Loc.T("Yes") : Loc.T("No"),
+            DateOnly d => d.ToString("dd MMM yyyy", Loc.Culture),
             double d => d.ToString("0.##", Inv),
             _ => Convert.ToString(value, Inv) ?? "",
         };

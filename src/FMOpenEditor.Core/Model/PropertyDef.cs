@@ -1,3 +1,5 @@
+using FMOpenEditor.Core.Localization;
+
 namespace FMOpenEditor.Core.Model;
 
 /// <summary>How a property's value is represented in .NET.</summary>
@@ -42,4 +44,11 @@ public sealed record PropertyDef(string Key, string Label, string Category, Valu
     public string? Description { get; init; }
 
     public bool IsNumeric => Kind is ValueKind.Integer or ValueKind.Money or ValueKind.Decimal;
+
+    // Shown to the user in the chosen language. Label, Category and Choices stay in English: presets,
+    // keys and searches rely on them.
+    public string DisplayLabel => Loc.T(Label);
+    public string DisplayCategory => Loc.T(Category);
+    public IReadOnlyList<string>? DisplayChoices => Choices?.Select(c => Loc.T(c)).ToList();
+    public string? DisplayDescription => Description is null ? null : Loc.T(Description);
 }

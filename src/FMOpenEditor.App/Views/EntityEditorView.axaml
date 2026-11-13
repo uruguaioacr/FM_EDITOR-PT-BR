@@ -1,4 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:l="using:FMOpenEditor.App.Localization"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:FMOpenEditor.App.ViewModels"
              xmlns:c="using:FMOpenEditor.App.Controls"
@@ -59,7 +60,7 @@
       <Grid ColumnDefinitions="Auto,*" ToolTip.Tip="{Binding Tooltip}">
         <TextBlock Classes="label" Classes.pending="{Binding IsPending}" Text="{Binding Label}" Width="{Binding LabelWidth}" />
         <ToggleSwitch Grid.Column="1" IsChecked="{Binding IsChecked}" IsEnabled="{Binding IsEditable}"
-                      OnContent="Yes" OffContent="No" />
+                      OnContent="{l:T 'Yes'}" OffContent="{l:T 'No'}" />
       </Grid>
     </DataTemplate>
 
@@ -120,13 +121,16 @@
     <DataTemplate DataType="vm:RelatedListViewModel">
       <DockPanel Margin="8,8,12,8">
         <TextBlock DockPanel.Dock="Top" Classes="muted" FontSize="12" Margin="4,0,0,8" Text="{Binding Summary}" />
-        <TextBlock DockPanel.Dock="Top" Classes="muted" Margin="4,8" IsVisible="{Binding IsEmpty}" Text="Nobody here yet." />
+        <TextBlock DockPanel.Dock="Top" Classes="muted" Margin="4,8" IsVisible="{Binding IsEmpty}" Text="{l:T 'Nobody here yet.'}" />
         <ListBox x:Name="RelatedList" Classes="related" ItemsSource="{Binding Items}" Background="Transparent">
           <ListBox.ItemTemplate>
             <DataTemplate DataType="vm:RelatedItem">
               <Button Classes="ghost related" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                       Command="{Binding $parent[ListBox].((vm:RelatedListViewModel)DataContext).OpenCommand}"
-                      CommandParameter="{Binding}" ToolTip.Tip="{Binding Name, StringFormat='Open {0}'}" ToolTip.ShowDelay="700">
+                      CommandParameter="{Binding}" ToolTip.ShowDelay="700">
+                <ToolTip.Tip>
+                  <TextBlock><Run Text="{l:T 'Open '}" /><Run Text="{Binding Name, Mode=OneWay}" /></TextBlock>
+                </ToolTip.Tip>
                 <Grid ColumnDefinitions="Auto,*,Auto">
                   <Border Width="30" Height="30" Margin="0,0,12,0" CornerRadius="15" ClipToBounds="True"
                           Background="{DynamicResource FieldBrush}"

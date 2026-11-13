@@ -1,4 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:l="using:FMOpenEditor.App.Localization"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:FMOpenEditor.App.ViewModels"
              xmlns:r="using:FMOpenEditor.App.ViewModels.Research"
@@ -29,31 +30,31 @@
   <Border Classes="glass" Padding="20,18,20,12">
   <DockPanel>
     <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,8">
-      <TextBlock Classes="h1" Text="Research: map a new game version" />
+      <TextBlock Classes="h1" Text="{l:T 'Research: map a new game version'}" />
       <TextBlock Classes="hint"
-                 Text="Find one record (a club, a player), work out where each field sits in it, then find a stable path to it from the game module. Step-by-step guide: docs/DEFINITIONS.md." />
+                 Text="{l:T 'Find one record (a club, a player), work out where each field sits in it, then find a stable path to it from the game module. Step-by-step guide: docs/DEFINITIONS.md.'}" />
       <TextBlock Text="{Binding ModuleInfo}" Classes="muted" />
       <Border Classes="inset" IsVisible="{Binding !IsAvailable}">
-        <TextBlock TextWrapping="Wrap" Text="Connect to the running game from the Home page to use these tools. They aren't available for the demo save." />
+        <TextBlock TextWrapping="Wrap" Text="{l:T 'Connect to the running game from the Home page to use these tools. They aren’t available for the demo save.'}" />
       </Border>
     </StackPanel>
 
     <TabControl IsVisible="{Binding IsAvailable}" SelectedIndex="{Binding SelectedTab}">
 
       <!-- 0: value scan + offset calculator -->
-      <TabItem Header="Value scan">
+      <TabItem Header="{l:T 'Value scan'}">
         <ScrollViewer>
           <StackPanel Spacing="12" Margin="0,8">
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="hint" Text="Scan for a number you can see in the game, change it in the game, and scan again until a few addresses remain. Money: set the game's currency to pounds first and try Int32, Int64 and Double." />
+                <TextBlock Classes="hint" Text="{l:T 'Scan for a number you can see in the game, change it in the game, and scan again until a few addresses remain. Money: set the game’s currency to pounds first and try Int32, Int64 and Double.'}" />
                 <WrapPanel>
-                  <TextBox Text="{Binding Value}" Watermark="value" Width="160" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding Value}" Watermark="{l:T 'value'}" Width="160" Margin="0,0,6,6" />
                   <ComboBox ItemsSource="{Binding Types}" SelectedItem="{Binding Type}" Width="110" Margin="0,0,6,6" />
-                  <Button Classes="accent" Content="First scan" Command="{Binding FirstScanCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
+                  <Button Classes="accent" Content="{l:T 'First scan'}" Command="{Binding FirstScanCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
                   <ComboBox ItemsSource="{Binding Compares}" SelectedItem="{Binding Compare}" Width="130" Margin="0,0,6,6" />
-                  <Button Content="Next scan" Command="{Binding NextScanCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
-                  <Button Content="Reset" Command="{Binding ResetCommand}" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Next scan'}" Command="{Binding NextScanCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Reset'}" Command="{Binding ResetCommand}" Margin="0,0,6,6" />
                 </WrapPanel>
                 <TextBlock Text="{Binding ResultText}" TextWrapping="Wrap" />
                 <ListBox ItemsSource="{Binding Hits}" SelectedItem="{Binding SelectedHit}" MaxHeight="300">
@@ -67,20 +68,20 @@
                   </ListBox.ItemTemplate>
                 </ListBox>
                 <WrapPanel>
-                  <TextBox Text="{Binding WriteValue}" Watermark="new value" Width="160" Margin="0,0,6,6" />
-                  <Button Content="Write to selected address" Command="{Binding WriteCommand}" Margin="0,0,6,6" />
-                  <Button Content="Find pointers to selected" Command="{Binding PointersToHitCommand}" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding WriteValue}" Watermark="{l:T 'new value'}" Width="160" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Write to selected address'}" Command="{Binding WriteCommand}" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Find pointers to selected'}" Command="{Binding PointersToHitCommand}" Margin="0,0,6,6" />
                 </WrapPanel>
               </StackPanel>
             </Border>
 
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="h2" Text="Offset calculator" />
-                <TextBlock Classes="hint" Text="Field address minus record base. Selecting a scan hit fills the field address; the other tools fill the record base." />
+                <TextBlock Classes="h2" Text="{l:T 'Offset calculator'}" />
+                <TextBlock Classes="hint" Text="{l:T 'Field address minus record base. Selecting a scan hit fills the field address; the other tools fill the record base.'}" />
                 <WrapPanel>
-                  <TextBox Text="{Binding RecordBase}" Watermark="record base (hex)" Width="200" Margin="0,0,6,6" />
-                  <TextBox Text="{Binding FieldAddress}" Watermark="field address (hex)" Width="200" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding RecordBase}" Watermark="{l:T 'record base (hex)'}" Width="200" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding FieldAddress}" Watermark="{l:T 'field address (hex)'}" Width="200" Margin="0,0,6,6" />
                   <SelectableTextBlock Text="{Binding OffsetResult}" VerticalAlignment="Center" Classes="mono" />
                 </WrapPanel>
               </StackPanel>
@@ -90,28 +91,28 @@
       </TabItem>
 
       <!-- 1: strings and pointers -->
-      <TabItem Header="Strings &amp; pointers">
+      <TabItem Header="{l:T 'Strings &amp; pointers'}">
         <ScrollViewer>
           <StackPanel Spacing="12" Margin="0,8" DataContext="{Binding Search}" x:DataType="r:MemorySearchViewModel">
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="h2" Text="Find a string" />
-                <TextBlock Classes="hint" Text="Search for an unusual player's or club's name, exactly as the game shows it. Then find pointers to the hit: one of them is usually a name field inside the record." />
+                <TextBlock Classes="h2" Text="{l:T 'Find a string'}" />
+                <TextBlock Classes="hint" Text="{l:T 'Search for an unusual player’s or club’s name, exactly as the game shows it. Then find pointers to the hit: one of them is usually a name field inside the record.'}" />
                 <WrapPanel>
-                  <TextBox Text="{Binding Text}" Watermark="name" Width="260" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding Text}" Watermark="{l:T 'name'}" Width="260" Margin="0,0,6,6" />
                   <ComboBox ItemsSource="{Binding Encodings}" SelectedItem="{Binding Encoding}" Width="110" Margin="0,0,6,6" />
-                  <Button Classes="accent" Content="Find string" Command="{Binding FindStringCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
+                  <Button Classes="accent" Content="{l:T 'Find string'}" Command="{Binding FindStringCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
                 </WrapPanel>
               </StackPanel>
             </Border>
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="h2" Text="What points here?" />
-                <TextBlock Classes="hint" Text="Lists 8-byte pointers to the target. A max offset above 0 also finds pointers to just before it, i.e. to the start of the record that contains your field. Repeat on each hit to climb towards a pointer inside the module (★): that's a root candidate." />
+                <TextBlock Classes="h2" Text="{l:T 'What points here?'}" />
+                <TextBlock Classes="hint" Text="{l:T 'Lists 8-byte pointers to the target. A max offset above 0 also finds pointers to just before it, i.e. to the start of the record that contains your field. Repeat on each hit to climb towards a pointer inside the module (★): that’s a root candidate.'}" />
                 <WrapPanel>
-                  <TextBox Text="{Binding PointerTarget}" Watermark="target address (hex)" Width="220" Margin="0,0,6,6" />
-                  <TextBox Text="{Binding MaxOffset}" Watermark="max offset" Width="110" Margin="0,0,6,6" ToolTip.Tip="How far before the target a pointer may point, in hex (e.g. 0x400)." />
-                  <Button Classes="accent" Content="Find pointers" Command="{Binding FindPointersCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding PointerTarget}" Watermark="{l:T 'target address (hex)'}" Width="220" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding MaxOffset}" Watermark="{l:T 'max offset'}" Width="110" Margin="0,0,6,6" ToolTip.Tip="{l:T 'How far before the target a pointer may point, in hex (e.g. 0x400).'}" />
+                  <Button Classes="accent" Content="{l:T 'Find pointers'}" Command="{Binding FindPointersCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
                 </WrapPanel>
               </StackPanel>
             </Border>
@@ -129,8 +130,8 @@
                   </ListBox.ItemTemplate>
                 </ListBox>
                 <WrapPanel>
-                  <Button Content="Find pointers to selected" Command="{Binding PointersToSelectedCommand}" Margin="0,0,6,6" />
-                  <Button Content="Open selected as a record" Command="{Binding UseSelectedAsBaseCommand}" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Find pointers to selected'}" Command="{Binding PointersToSelectedCommand}" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Open selected as a record'}" Command="{Binding UseSelectedAsBaseCommand}" Margin="0,0,6,6" />
                 </WrapPanel>
               </StackPanel>
             </Border>
@@ -139,18 +140,18 @@
       </TabItem>
 
       <!-- 2: RTTI -->
-      <TabItem Header="Classes (RTTI)">
+      <TabItem Header="{l:T 'Classes (RTTI)'}">
         <ScrollViewer>
           <StackPanel Spacing="12" Margin="0,8" DataContext="{Binding Rtti}" x:DataType="r:RttiViewModel">
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="hint" Text="Lists the C++ classes in game_plugin.dll from their run-time type information, with each one's vtable. Every object of a class starts with a pointer to its vtable, so counting those pointers in the heap finds every player, club or nation and gives each one's base address, without needing a root." />
-                <TextBlock Classes="hint" Text="The module address isn't known, so this tool can't run." IsVisible="{Binding !HasModule}" />
+                <TextBlock Classes="hint" Text="{l:T 'Lists the C++ classes in game_plugin.dll from their run-time type information, with each one’s vtable. Every object of a class starts with a pointer to its vtable, so counting those pointers in the heap finds every player, club or nation and gives each one’s base address, without needing a root.'}" />
+                <TextBlock Classes="hint" Text="{l:T 'The module address isn’t known, so this tool can’t run.'}" IsVisible="{Binding !HasModule}" />
                 <WrapPanel>
-                  <Button Classes="accent" Content="Find classes" Command="{Binding FindClassesCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
-                  <TextBox Text="{Binding Filter}" Watermark="filter by name" Width="220" Margin="0,0,6,6" />
-                  <Button Content="Count objects (listed)" Command="{Binding CountListedCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
-                  <Button Content="Count objects (selected)" Command="{Binding CountSelectedCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
+                  <Button Classes="accent" Content="{l:T 'Find classes'}" Command="{Binding FindClassesCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding Filter}" Watermark="{l:T 'filter by name'}" Width="220" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Count objects (listed)'}" Command="{Binding CountListedCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Count objects (selected)'}" Command="{Binding CountSelectedCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
                 </WrapPanel>
                 <TextBlock Text="{Binding Status}" TextWrapping="Wrap" />
                 <ListBox ItemsSource="{Binding Classes}" SelectedItem="{Binding SelectedClass}" MaxHeight="320">
@@ -168,8 +169,8 @@
             </Border>
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="h2" Text="Objects" />
-                <TextBlock Classes="hint" Text="Objects of the selected class (first 1,000) after counting it on its own." />
+                <TextBlock Classes="h2" Text="{l:T 'Objects'}" />
+                <TextBlock Classes="hint" Text="{l:T 'Objects of the selected class (first 1,000) after counting it on its own.'}" />
                 <ListBox ItemsSource="{Binding Instances}" SelectedItem="{Binding SelectedInstance}" MaxHeight="260">
                   <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="r:AddressRow">
@@ -178,9 +179,9 @@
                   </ListBox.ItemTemplate>
                 </ListBox>
                 <WrapPanel>
-                  <Button Content="Open as a record" Command="{Binding UseInstanceAsBaseCommand}" Margin="0,0,6,6" />
-                  <Button Content="Add to correlator" Command="{Binding AddInstanceToCorrelatorCommand}" Margin="0,0,6,6" />
-                  <Button Content="Find pointers to it" Command="{Binding PointersToInstanceCommand}" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Open as a record'}" Command="{Binding UseInstanceAsBaseCommand}" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Add to correlator'}" Command="{Binding AddInstanceToCorrelatorCommand}" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Find pointers to it'}" Command="{Binding PointersToInstanceCommand}" Margin="0,0,6,6" />
                 </WrapPanel>
               </StackPanel>
             </Border>
@@ -189,18 +190,18 @@
       </TabItem>
 
       <!-- 3: record snapshot / diff -->
-      <TabItem Header="Record diff">
+      <TabItem Header="{l:T 'Record diff'}">
         <ScrollViewer>
           <StackPanel Spacing="12" Margin="0,8" DataContext="{Binding Diff}" x:DataType="r:RecordDiffViewModel">
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="hint" Text="Take a snapshot, change exactly one thing in the game (sign a contract, injure a player, use the in-game editor), and take another. The bytes that changed are the field." />
+                <TextBlock Classes="hint" Text="{l:T 'Take a snapshot, change exactly one thing in the game (sign a contract, injure a player, use the in-game editor), and take another. The bytes that changed are the field.'}" />
                 <WrapPanel>
-                  <TextBox Text="{Binding BaseAddress}" Watermark="record base (hex)" Width="220" Margin="0,0,6,6" />
-                  <TextBox Text="{Binding Length}" Watermark="length" Width="100" Margin="0,0,6,6" />
-                  <Button Classes="accent" Content="Take snapshot" Command="{Binding SnapshotCommand}" Margin="0,0,6,6" />
-                  <Button Content="Clear" Command="{Binding ClearCommand}" Margin="0,0,6,6" />
-                  <CheckBox Content="Only changed rows" IsChecked="{Binding OnlyChangedRows}" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding BaseAddress}" Watermark="{l:T 'record base (hex)'}" Width="220" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding Length}" Watermark="{l:T 'length'}" Width="100" Margin="0,0,6,6" />
+                  <Button Classes="accent" Content="{l:T 'Take snapshot'}" Command="{Binding SnapshotCommand}" Margin="0,0,6,6" />
+                  <Button Content="{l:T 'Clear'}" Command="{Binding ClearCommand}" Margin="0,0,6,6" />
+                  <CheckBox Content="{l:T 'Only changed rows'}" IsChecked="{Binding OnlyChangedRows}" Margin="0,0,6,6" />
                 </WrapPanel>
                 <TextBlock Text="{Binding Status}" TextWrapping="Wrap" />
               </StackPanel>
@@ -208,7 +209,7 @@
 
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="h2" Text="Changes" />
+                <TextBlock Classes="h2" Text="{l:T 'Changes'}" />
                 <ListBox ItemsSource="{Binding Changes}" MaxHeight="240">
                   <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="r:ChangeRow">
@@ -230,7 +231,7 @@
 
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="h2" Text="Hex dump" />
+                <TextBlock Classes="h2" Text="{l:T 'Hex dump'}" />
                 <ListBox Classes="dense" ItemsSource="{Binding Rows}" MaxHeight="420">
                   <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="r:HexRowView">
@@ -247,8 +248,8 @@
 
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="h2" Text="Pointers in this record" />
-                <TextBlock Classes="hint" Text="Offset 0x0 pointing into the module is usually the vtable. Strings are names. Other heap pointers are sub-records (contract, finances): follow one and its fields go in the definition with a &quot;path&quot;." />
+                <TextBlock Classes="h2" Text="{l:T 'Pointers in this record'}" />
+                <TextBlock Classes="hint" Text="{l:T 'Offset 0x0 pointing into the module is usually the vtable. Strings are names. Other heap pointers are sub-records (contract, finances): follow one and its fields go in the definition with a &quot;path&quot;.'}" />
                 <ListBox ItemsSource="{Binding Pointers}" SelectedItem="{Binding SelectedPointer}" MaxHeight="300">
                   <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="r:PointerRow">
@@ -260,7 +261,7 @@
                     </DataTemplate>
                   </ListBox.ItemTemplate>
                 </ListBox>
-                <Button Content="Follow selected pointer" Command="{Binding FollowPointerCommand}" />
+                <Button Content="{l:T 'Follow selected pointer'}" Command="{Binding FollowPointerCommand}" />
               </StackPanel>
             </Border>
           </StackPanel>
@@ -268,25 +269,25 @@
       </TabItem>
 
       <!-- 4: correlator -->
-      <TabItem Header="Correlator">
+      <TabItem Header="{l:T 'Correlator'}">
         <ScrollViewer>
           <StackPanel Spacing="12" Margin="0,8" DataContext="{Binding Correlator}" x:DataType="r:CorrelatorViewModel">
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="hint" Text="Finds a field by comparing many records at once. List several records (e.g. players from the Classes tab) and the value the game shows for each, such as their Finishing. Every offset and number type is tried; the ones that explain all the values are kept, with their scale." />
+                <TextBlock Classes="hint" Text="{l:T 'Finds a field by comparing many records at once. List several records (e.g. players from the Classes tab) and the value the game shows for each, such as their Finishing. Every offset and number type is tried; the ones that explain all the values are kept, with their scale.'}" />
                 <TextBox Text="{Binding SamplesText}" AcceptsReturn="True" TextWrapping="NoWrap" Height="200"
                          FontFamily="Cascadia Mono,Consolas,Menlo,monospace"
                          Watermark="0x1F2A3B40 15&#x0a;0x1F2A4C80 7&#x0a;0x1F2A5DC0 18" />
                 <WrapPanel>
-                  <TextBox Text="{Binding Length}" Watermark="record length" Width="120" Margin="0,0,6,6" />
-                  <Button Classes="accent" Content="Find the field" Command="{Binding CorrelateCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
+                  <TextBox Text="{Binding Length}" Watermark="{l:T 'record length'}" Width="120" Margin="0,0,6,6" />
+                  <Button Classes="accent" Content="{l:T 'Find the field'}" Command="{Binding CorrelateCommand}" IsEnabled="{Binding !IsBusy}" Margin="0,0,6,6" />
                 </WrapPanel>
                 <TextBlock Text="{Binding Status}" TextWrapping="Wrap" />
               </StackPanel>
             </Border>
             <Border Classes="inset">
               <StackPanel Spacing="8">
-                <TextBlock Classes="h2" Text="Matches" />
+                <TextBlock Classes="h2" Text="{l:T 'Matches'}" />
                 <ListBox ItemsSource="{Binding Candidates}" SelectedItem="{Binding Selected}" MaxHeight="360">
                   <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="r:CandidateRow">
@@ -297,7 +298,7 @@
                           <TextBlock Grid.Column="2" Text="{Binding Formula}" />
                         </Grid>
                         <TextBlock Classes="mono muted" FontSize="12">
-                          <Run Text="stored: " />
+                          <Run Text="{l:T 'stored: '}" />
                           <Run Text="{Binding Stored, Mode=OneWay}" />
                         </TextBlock>
                         <SelectableTextBlock Text="{Binding Json}" Classes="mono" FontSize="12" />

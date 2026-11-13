@@ -1,5 +1,6 @@
 using FMOpenEditor.Core.Data;
 using FMOpenEditor.Core.Model;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.Core.Editing;
 
@@ -107,9 +108,9 @@ public sealed class EditorSession : IDisposable
     public void Set(Entity entity, string key, object? value)
     {
         var def = PropertyCatalog.Get(entity.Kind, key);
-        if (def.IsDerived) throw new InvalidOperationException($"{def.Label} is calculated and can't be edited.");
+        if (def.IsDerived) throw new InvalidOperationException(Loc.F("{0} is calculated and can't be edited.", def.DisplayLabel));
         if (!Database.Supports(entity.Kind, key))
-            throw new NotSupportedException($"{def.Label} isn't supported for this game version yet.");
+            throw new NotSupportedException(Loc.F("{0} isn't supported for this game version yet.", def.DisplayLabel));
 
         var coerced = Values.Coerce(def, value);
         if (key is "Name" or "FirstName" or "LastName" or "CommonName") _names.Remove((entity.Kind, entity.Id));

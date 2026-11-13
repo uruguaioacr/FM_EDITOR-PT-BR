@@ -31,14 +31,14 @@ public static class PresetEngine
                 if (action.Custom is { } custom)
                 {
                     if (CustomActions.Find(custom) is { } impl) changes += impl.Apply(session, entity, action.Parameter);
-                    else skipped.Add($"unknown action '{custom}'");
+                    else skipped.Add(Localization.Loc.F("unknown action '{0}'", custom));
                     continue;
                 }
                 foreach (var key in ResolveKeys(entity.Kind, action))
                 {
                     if (!session.CanEdit(entity.Kind, key))
                     {
-                        skipped.Add(PropertyCatalog.Find(entity.Kind, key)?.Label ?? key);
+                        skipped.Add(PropertyCatalog.Find(entity.Kind, key)?.DisplayLabel ?? key);
                         continue;
                     }
                     var value = action.FromProperty is { } from ? session.TryRead(entity, from) : action.Value;

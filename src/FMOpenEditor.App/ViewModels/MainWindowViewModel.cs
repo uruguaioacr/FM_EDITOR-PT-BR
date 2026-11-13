@@ -7,6 +7,7 @@ using FMOpenEditor.Core.Data;
 using FMOpenEditor.Core.Definitions;
 using FMOpenEditor.Core.Editing;
 using FMOpenEditor.Core.Graphics;
+using FMOpenEditor.Core.Localization;
 using FMOpenEditor.Core.Memory;
 using FMOpenEditor.Core.Model;
 using FMOpenEditor.Core.Presets;
@@ -48,7 +49,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string? _backTip;
     [ObservableProperty] private string? _forwardTip;
     [ObservableProperty] private object? _currentPage;
-    [ObservableProperty] private string _status = "Ready.";
+    [ObservableProperty] private string _status = Loc.T("Ready.");
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasPending))] private int _pendingCount;
     [ObservableProperty] private bool _canUndo;
     [ObservableProperty] private bool _autoSave;
@@ -69,7 +70,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
 
     public bool IsConnected => Session is not null;
     public bool HasPending => PendingCount > 0;
-    public string ConnectionLabel => Session?.Database.DisplayName ?? "Not connected";
+    public string ConnectionLabel => Session?.Database.DisplayName ?? Loc.T("Not connected");
     public string AppVersion => $"v{typeof(MainWindowViewModel).Assembly.GetName().Version?.ToString(3)}";
 
     public MainWindowViewModel()
@@ -131,7 +132,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
     private void OnCurrencyChanged()
     {
         foreach (var p in _pages.Values.OfType<BrowserViewModel>()) p.CurrencyChanged();
-        Status = $"Amounts are now shown in {Money.Current.Name}.";
+        Status = Loc.F("Amounts are now shown in {0}.", Loc.T(Money.Current.Name));
     }
 
     /// <summary>The save's currencies with the game's own exchange rates (units per pound).</summary>
@@ -154,8 +155,8 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
     {
         var images = ImageService.Instance;
         IsIndexingGraphics = images.IsIndexing;
-        GraphicsStatus = images.IsIndexing ? "Reading graphics packs…"
-            : images.Active && !images.Library.IsEmpty ? $"{images.Library.Count:N0} pictures" : null;
+        GraphicsStatus = images.IsIndexing ? Loc.T("Reading graphics packs…")
+            : images.Active && !images.Library.IsEmpty ? Loc.F("{0:N0} pictures", images.Library.Count) : null;
     }
 
     private void ShowHome()
@@ -190,7 +191,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
         ConnectMessage = null;
         if (!OperatingSystem.IsWindows())
         {
-            ConnectMessage = "Connecting to the game is only supported on Windows for now.";
+            ConnectMessage = Loc.T("Connecting to the game is only supported on Windows for now.");
             return;
         }
 
@@ -202,16 +203,16 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
             var game = await Task.Run(() => GameProcess.FindRunning());
             if (game is null)
             {
-                ConnectMessage = "Football Manager isn't running. Start the game and load your save, then try again. " +
-                                 "If the game is running as administrator, run FM OpenEditor as administrator too.";
+                ConnectMessage = Loc.T("Football Manager isn't running. Start the game and load your save, then try again. " +
+                                       "If the game is running as administrator, run FM OpenEditor as administrator too.");
                 return;
             }
 
             var def = Definitions.Match(game.ModuleVersion);
             if (def is null)
             {
-                ConnectMessage = $"No game definition matches FM build {game.ModuleVersion}. " +
-                                 "Copy definitions/_template.json to start mapping it (docs/DEFINITIONS.md).";
+                ConnectMessage = Loc.F("No game definition matches FM build {0}. " +
+                                       "Copy definitions/_template.json to start mapping it (docs/DEFINITIONS.md).", game.ModuleVersion);
                 return;
             }
 
@@ -221,7 +222,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
                 try
                 {
                     return (m, new LiveDatabase(m, def, game.ModuleBase, game.ModuleSize,
-                        $"FM {def.Version} · live (build {game.ModuleVersion})", owner: m));
+                        Loc.F("FM {0} · live (build {1})", def.Version, game.ModuleVersion), owner: m));
                 }
                 catch
                 {
@@ -235,7 +236,8 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
             var total = def.Structs.Values.Sum(f => f.Count);
             var details = new List<string>
             {
-                $"Definition: {Path.GetFileName(def.SourcePath)} — {mapped} of {total} fields mapped{(def.Verified ? "" : ", not yet verified")}.",
+                Loc.F("Definition: {0} — {1} of {2} fields mapped{3}.", Path.GetFileName(def.SourcePath), mapped, total,
+                    def.Verified ? "" : Loc.T(", not yet verified")),
             };
             details.AddRange(db.Warnings);
             ConnectDetails = details;
@@ -243,12 +245,12 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
             var info = $"{game.ProcessName}.exe (pid {game.ProcessId}) · {def.Module} at 0x{game.ModuleBase:X}, {game.ModuleSize / 1048576} MB";
             Open(db, memory, info, game.ModuleBase, game.ModuleSize);
             ConnectMessage = db.GetAll(EntityKind.Player).Count == 0
-                ? "Attached, but no players were found: this game version isn't mapped yet. The Research tools are ready for mapping it."
+                ? Loc.T("Attached, but no players were found: this game version isn't mapped yet. The Research tools are ready for mapping it.")
                 : null;
         }
         catch (Exception ex)
         {
-            ConnectMessage = $"Couldn't attach to the game: {ex.Message}";
+            ConnectMessage = Loc.F("Couldn't attach to the game: {0}", ex.Message);
         }
         finally
         {
@@ -279,10 +281,10 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
         // Teams have no page: people look for clubs, and a club's page carries its first team's fields.
         (string Section, EntityKind[] Kinds)[] groups =
         [
-            ("PEOPLE", [EntityKind.Player, EntityKind.Staff]),
-            ("FOOTBALL", [EntityKind.Club, EntityKind.Competition, EntityKind.Stadium, EntityKind.Award, EntityKind.Derby]),
-            ("WORLD", [EntityKind.Nation, EntityKind.Continent, EntityKind.City, EntityKind.LocalRegion, EntityKind.Language, EntityKind.Currency, EntityKind.Weather]),
-            ("GAME DATA", [EntityKind.Injury, EntityKind.MediaSource, EntityKind.StageName]),
+            (Loc.T("PEOPLE"), [EntityKind.Player, EntityKind.Staff]),
+            (Loc.T("FOOTBALL"), [EntityKind.Club, EntityKind.Competition, EntityKind.Stadium, EntityKind.Award, EntityKind.Derby]),
+            (Loc.T("WORLD"), [EntityKind.Nation, EntityKind.Continent, EntityKind.City, EntityKind.LocalRegion, EntityKind.Language, EntityKind.Currency, EntityKind.Weather]),
+            (Loc.T("GAME DATA"), [EntityKind.Injury, EntityKind.MediaSource, EntityKind.StageName]),
         ];
         foreach (var (section, kinds) in groups)
         {
@@ -294,11 +296,11 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
                 first = false;
             }
         }
-        Nav.Add(new NavItem("Watch list", "snow", () => new WatchListViewModel(session), "TOOLS"));
-        Nav.Add(new NavItem("Research", "flask", () => new ResearchViewModel(_liveMemory, _liveModuleInfo, _liveModuleBase, _liveModuleSize)));
+        Nav.Add(new NavItem(Loc.T("Watch list"), "snow", () => new WatchListViewModel(session), Loc.T("TOOLS")));
+        Nav.Add(new NavItem(Loc.T("Research"), "flask", () => new ResearchViewModel(_liveMemory, _liveModuleInfo, _liveModuleBase, _liveModuleSize)));
         SelectedNav = Nav[0];
         UpdatePending();
-        Status = $"Opened {db.DisplayName}: {db.GetAll(EntityKind.Player).Count:N0} players, {db.GetAll(EntityKind.Club).Count:N0} clubs.";
+        Status = Loc.F("Opened {0}: {1:N0} players, {2:N0} clubs.", db.DisplayName, db.GetAll(EntityKind.Player).Count, db.GetAll(EntityKind.Club).Count);
     }
 
     private BrowserViewModel NewBrowser(EntityKind kind)
@@ -401,8 +403,8 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
     {
         CanGoBack = _back.Count > 0;
         CanGoForward = _forward.Count > 0;
-        BackTip = _back.TryPeek(out var b) ? $"Back to {Describe(b)} (mouse back button, Alt+Left)" : "Back";
-        ForwardTip = _forward.TryPeek(out var f) ? $"Forward to {Describe(f)} (mouse forward button, Alt+Right)" : "Forward";
+        BackTip = _back.TryPeek(out var b) ? Loc.F("Back to {0} (mouse back button, Alt+Left)", Describe(b)) : Loc.T("Back");
+        ForwardTip = _forward.TryPeek(out var f) ? Loc.F("Forward to {0} (mouse forward button, Alt+Right)", Describe(f)) : Loc.T("Forward");
     }
 
     private void ClearHistory()
@@ -426,15 +428,15 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
         var n = Session.Changes.Count;
         var failed = Session.Save();
         Status = failed.Count == 0
-            ? $"Saved {n} change(s) to {(Session.Database.IsLive ? "the game" : "the demo save")}."
-            : $"Saved {n - failed.Count}, {failed.Count} failed: {failed[0].Error.Message}";
+            ? (Session.Database.IsLive ? Loc.F("Saved {0} change(s) to the game.", n) : Loc.F("Saved {0} change(s) to the demo save.", n))
+            : Loc.F("Saved {0}, {1} failed: {2}", n - failed.Count, failed.Count, failed[0].Error.Message);
     }
 
     [RelayCommand]
     private void Discard()
     {
         Session?.Discard();
-        Status = "Pending changes discarded.";
+        Status = Loc.T("Pending changes discarded.");
     }
 
     [RelayCommand]
@@ -442,7 +444,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
     {
         if (Session is null) return;
         var n = Session.UndoLastSave();
-        Status = n > 0 ? $"Undid the last save ({n} value(s) restored)." : "Nothing to undo.";
+        Status = n > 0 ? Loc.F("Undid the last save ({0} value(s) restored).", n) : Loc.T("Nothing to undo.");
     }
 
     [RelayCommand]
@@ -450,7 +452,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
     {
         Session?.Refresh();
         foreach (var p in _pages.Values.OfType<BrowserViewModel>()) p.SearchCommand.Execute(null);
-        Status = "Re-read the game data.";
+        Status = Loc.T("Re-read the game data.");
     }
 
     [RelayCommand]

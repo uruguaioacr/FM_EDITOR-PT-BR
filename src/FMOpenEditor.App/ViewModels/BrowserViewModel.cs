@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMOpenEditor.App.Services;
 using FMOpenEditor.Core.Editing;
+using FMOpenEditor.Core.Localization;
 using FMOpenEditor.Core.Model;
 using FMOpenEditor.Core.Presets;
 using FMOpenEditor.Core.Search;
@@ -14,8 +15,8 @@ public sealed record PresetOpOption(PresetOp Op, string Label)
 {
     public static readonly IReadOnlyList<PresetOpOption> All =
     [
-        new(PresetOp.Set, "Set to"), new(PresetOp.Add, "Add"), new(PresetOp.Multiply, "Multiply by"),
-        new(PresetOp.AtLeast, "Raise to at least"), new(PresetOp.AtMost, "Lower to at most"),
+        new(PresetOp.Set, Loc.T("Set to")), new(PresetOp.Add, Loc.T("Add")), new(PresetOp.Multiply, Loc.T("Multiply by")),
+        new(PresetOp.AtLeast, Loc.T("Raise to at least")), new(PresetOp.AtMost, Loc.T("Lower to at most")),
     ];
 
     public override string ToString() => Label;
@@ -77,7 +78,7 @@ public sealed partial class BrowserViewModel : ObservableObject
         Title = PropertyCatalog.Plural(kind);
 
         // The five original kinds have hand-picked columns; the rest show their first few mapped fields.
-        var columns = DefaultColumns(kind).Where(c => session.IsSupported(kind, c.Key));
+        var columns = DefaultColumns(kind).Where(c => session.IsSupported(kind, c.Key)).Select(c => c with { Header = Loc.T("column", c.Header) });
         Columns = (kind > EntityKind.Nation ? columns.Take(8) : columns).ToList();
         FilterProperties = PropertyCatalog.For(kind).Where(p => session.IsSupported(kind, p.Key)).ToList();
         EditableProperties = PropertyCatalog.For(kind).Where(p => session.CanEdit(kind, p.Key)).ToList();
@@ -228,8 +229,8 @@ public sealed partial class BrowserViewModel : ObservableObject
 
         var total = _session.GetAll(Kind).Count;
         Summary = found.Count >= query.Limit
-            ? $"Showing first {found.Count:N0} of {total:N0} — narrow your search"
-            : found.Count == total ? $"{total:N0} {Title.ToLowerInvariant()}" : $"{found.Count:N0} of {total:N0} {Title.ToLowerInvariant()}";
+            ? Loc.F("Showing first {0:N0} of {1:N0} — narrow your search", found.Count, total)
+            : found.Count == total ? $"{total:N0} {Title.ToLowerInvariant()}" : Loc.F("{0:N0} of {1:N0} {2}", found.Count, total, Title.ToLowerInvariant());
     }
 
     public void SortBy(string key)
@@ -304,11 +305,11 @@ public sealed partial class BrowserViewModel : ObservableObject
         var targets = SelectedEntities;
         if (preset.Scope == PresetScope.Selection && targets.Count == 0)
         {
-            _status($"Select at least one row to apply {preset.Name}.");
+            _status(Loc.F("Select at least one row to apply {0}.", preset.DisplayName));
             return;
         }
         var r = PresetEngine.Apply(_session, preset, targets);
-        _status(Describe(preset.Name, r));
+        _status(Describe(preset.DisplayName, r));
     }
 
     [RelayCommand]
@@ -318,7 +319,7 @@ public sealed partial class BrowserViewModel : ObservableObject
         var targets = SelectedEntities;
         if (targets.Count == 0)
         {
-            _status("Select the rows to change first (Ctrl+A selects all results).");
+            _status(Loc.T("Select the rows to change first (Ctrl+A selects all results)."));
             return;
         }
         try
@@ -329,7 +330,7 @@ public sealed partial class BrowserViewModel : ObservableObject
                     ? MassValue
                     : ValueParser.Parse(_session, MassProperty, MassValue);
             var r = PresetEngine.MassEdit(_session, targets, MassProperty.Key, MassOp.Op, value);
-            _status(Describe($"Mass edit of {MassProperty.Label}", r));
+            _status(Describe(Loc.F("Mass edit of {0}", MassProperty.DisplayLabel), r));
         }
         catch (Exception ex) when (ex is FormatException or InvalidOperationException or NotSupportedException)
         {
@@ -342,7 +343,7 @@ public sealed partial class BrowserViewModel : ObservableObject
     {
         if (_selection.Count != 2)
         {
-            _status("Select exactly two rows to compare.");
+            _status(Loc.T("Select exactly two rows to compare."));
             return;
         }
         _compare(_selection[0].Entity, _selection[1].Entity);
@@ -354,8 +355,8 @@ public sealed partial class BrowserViewModel : ObservableObject
         var n = 0;
         var action = CustomActions.Find("ReleaseOnFree")!;
         foreach (var e in SelectedEntities) n += action.Apply(_session, e, null) > 0 ? 1 : 0;
-        _status(n > 0 ? $"Released {n} on a free transfer. Save changes to apply in the game."
-                      : "Nothing to release (free agents, or contracts not supported for this version).");
+        _status(n > 0 ? Loc.F("Released {0} on a free transfer. Save changes to apply in the game.", n)
+                      : Loc.T("Nothing to release (free agents, or contracts not supported for this version)."));
     }
 
     [RelayCommand] private void Freeze() => Watch(WatchMode.Freeze);
@@ -365,7 +366,7 @@ public sealed partial class BrowserViewModel : ObservableObject
     {
         var n = 0;
         foreach (var e in SelectedEntities) n += _session.Watcher.WatchAttributes(e, mode) > 0 ? 1 : 0;
-        _status(mode == WatchMode.Freeze ? $"Froze the attributes of {n}." : $"{n} can now only improve.");
+        _status(mode == WatchMode.Freeze ? Loc.F("Froze the attributes of {0}.", n) : Loc.F("{0} can now only improve.", n));
         Editor?.Reload();
     }
 
@@ -373,14 +374,14 @@ public sealed partial class BrowserViewModel : ObservableObject
     private void Unwatch()
     {
         foreach (var e in SelectedEntities) _session.Watcher.Unwatch(e);
-        _status("Watch removed.");
+        _status(Loc.T("Watch removed."));
         Editor?.Reload();
     }
 
     private static string Describe(string what, PresetResult r)
     {
-        var s = r.Changes == 0 ? $"{what}: nothing to change." : $"{what}: {r.Changes} change(s) to {r.Entities} — ready to save.";
-        if (r.Skipped.Count > 0) s += $" Not supported in this version: {string.Join(", ", r.Skipped.Take(4))}{(r.Skipped.Count > 4 ? "…" : "")}.";
+        var s = r.Changes == 0 ? Loc.F("{0}: nothing to change.", what) : Loc.F("{0}: {1} change(s) to {2} — ready to save.", what, r.Changes, r.Entities);
+        if (r.Skipped.Count > 0) s += Loc.F(" Not supported in this version: {0}.", string.Join(", ", r.Skipped.Take(4)) + (r.Skipped.Count > 4 ? "…" : ""));
         return s;
     }
 

@@ -1,4 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:l="using:FMOpenEditor.App.Localization"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:FMOpenEditor.App.ViewModels"
              xmlns:c="using:FMOpenEditor.App.Controls"
@@ -7,29 +8,38 @@
   <StackPanel Spacing="16" Margin="6">
 
     <StackPanel Spacing="8">
-      <TextBlock Classes="eyebrow" Text="APPEARANCE" />
-      <ListBox SelectedIndex="{Binding ThemeIndex}" Background="Transparent">
-        <ListBox.ItemsPanel>
-          <ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate>
-        </ListBox.ItemsPanel>
-        <ListBoxItem HorizontalContentAlignment="Center" ToolTip.Tip="Follow Windows">
-          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="settings" Size="15" /><TextBlock Text="System" /></StackPanel>
-        </ListBoxItem>
-        <ListBoxItem HorizontalContentAlignment="Center">
-          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="sun" Size="15" /><TextBlock Text="Day" /></StackPanel>
-        </ListBoxItem>
-        <ListBoxItem HorizontalContentAlignment="Center">
-          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="moon" Size="15" /><TextBlock Text="Night" /></StackPanel>
-        </ListBoxItem>
-      </ListBox>
-      <ToggleSwitch IsChecked="{Binding ReduceMotion}" OnContent="Reduce motion" OffContent="Reduce motion"
-                    ToolTip.Tip="Stops the drifting background, page entrances and the mascot's blinking" />
+      <TextBlock Classes="eyebrow" Text="{l:T 'LANGUAGE'}" />
+      <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" HorizontalAlignment="Stretch" />
+      <TextBlock Classes="muted" FontSize="12" TextWrapping="Wrap" Text="{Binding LanguageHint}"
+                 IsVisible="{Binding LanguageHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
     </StackPanel>
 
     <Rectangle Height="1" Fill="{DynamicResource HairlineBrush}" />
 
     <StackPanel Spacing="8">
-      <TextBlock Classes="eyebrow" Text="CURRENCY" />
+      <TextBlock Classes="eyebrow" Text="{l:T 'APPEARANCE'}" />
+      <ListBox SelectedIndex="{Binding ThemeIndex}" Background="Transparent">
+        <ListBox.ItemsPanel>
+          <ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        <ListBoxItem HorizontalContentAlignment="Center" ToolTip.Tip="{l:T 'Follow Windows'}">
+          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="settings" Size="15" /><TextBlock Text="{l:T 'System'}" /></StackPanel>
+        </ListBoxItem>
+        <ListBoxItem HorizontalContentAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="sun" Size="15" /><TextBlock Text="{l:T 'Day'}" /></StackPanel>
+        </ListBoxItem>
+        <ListBoxItem HorizontalContentAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="moon" Size="15" /><TextBlock Text="{l:T 'Night'}" /></StackPanel>
+        </ListBoxItem>
+      </ListBox>
+      <ToggleSwitch IsChecked="{Binding ReduceMotion}" OnContent="{l:T 'Reduce motion'}" OffContent="{l:T 'Reduce motion'}"
+                    ToolTip.Tip="{l:T 'Stops the drifting background, page entrances and the mascot’s blinking'}" />
+    </StackPanel>
+
+    <Rectangle Height="1" Fill="{DynamicResource HairlineBrush}" />
+
+    <StackPanel Spacing="8">
+      <TextBlock Classes="eyebrow" Text="{l:T 'CURRENCY'}" />
       <Grid ColumnDefinitions="*,Auto">
         <ListBox x:Name="CommonCurrencies" ItemsSource="{Binding CommonCurrencies}" SelectedItem="{Binding SelectedCommon}" Background="Transparent">
           <ListBox.ItemsPanel>
@@ -45,11 +55,11 @@
           </ListBox.ItemTemplate>
         </ListBox>
         <Button Grid.Column="1" Margin="6,0,0,0" VerticalAlignment="Center" Command="{Binding ToggleMoreCurrenciesCommand}"
-                Content="{Binding MoreCurrenciesLabel}" ToolTip.Tip="Search every currency in your save" />
+                Content="{Binding MoreCurrenciesLabel}" ToolTip.Tip="{l:T 'Search every currency in your save'}" />
       </Grid>
 
       <StackPanel Spacing="6" IsVisible="{Binding ShowMoreCurrencies}">
-        <TextBox Classes="search" Watermark="Search currencies" Text="{Binding CurrencySearch}" />
+        <TextBox Classes="search" Watermark="{l:T 'Search currencies'}" Text="{Binding CurrencySearch}" />
         <ListBox x:Name="AllCurrencies" ItemsSource="{Binding CurrencyResults}" SelectedItem="{Binding SelectedOther}"
                  MaxHeight="190" Background="Transparent" IsVisible="{Binding CurrencyResults.Count}">
           <ListBox.ItemTemplate>
@@ -71,16 +81,16 @@
     <Rectangle Height="1" Fill="{DynamicResource HairlineBrush}" />
 
     <StackPanel Spacing="8">
-      <TextBlock Classes="eyebrow" Text="FACES AND BADGES" />
-      <ToggleSwitch IsChecked="{Binding ShowPictures}" OnContent="Show pictures from my graphics packs" OffContent="Show pictures from my graphics packs" />
+      <TextBlock Classes="eyebrow" Text="{l:T 'FACES AND BADGES'}" />
+      <ToggleSwitch IsChecked="{Binding ShowPictures}" OnContent="{l:T 'Show pictures from my graphics packs'}" OffContent="{l:T 'Show pictures from my graphics packs'}" />
       <TextBlock Classes="muted" FontSize="12" TextWrapping="Wrap"
-                 Text="Faces, club badges, competition logos and flags are read from your Football Manager graphics folder, the same packs the game uses. Anything without a picture just shows its name." />
+                 Text="{l:T 'Faces, club badges, competition logos and flags are read from your Football Manager graphics folder, the same packs the game uses. Anything without a picture just shows its name.'}" />
 
       <Border Classes="inset" Padding="12,10">
         <StackPanel Spacing="6">
           <StackPanel Orientation="Horizontal" Spacing="7">
             <c:Icon Kind="folder" Size="14" />
-            <TextBlock Text="Graphics folder" FontWeight="SemiBold" FontSize="12.5" />
+            <TextBlock Text="{l:T 'Graphics folder'}" FontWeight="SemiBold" FontSize="12.5" />
           </StackPanel>
           <SelectableTextBlock Text="{Binding FolderSummary}" Classes="muted num" FontSize="11" TextWrapping="Wrap" />
           <TextBlock Text="{Binding LibrarySummary}" FontSize="12" TextWrapping="Wrap" />
@@ -89,12 +99,12 @@
 
       <WrapPanel>
         <Button Click="OnBrowse" Margin="0,0,6,6">
-          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="folder" Size="14" /><TextBlock Text="Choose folder…" /></StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="folder" Size="14" /><TextBlock Text="{l:T 'Choose folder…'}" /></StackPanel>
         </Button>
         <Button Command="{Binding UseDetectedFolderCommand}" IsVisible="{Binding HasCustomFolder}" Margin="0,0,6,6"
-                Content="Find automatically" />
-        <Button Command="{Binding RescanCommand}" Margin="0,0,6,6" ToolTip.Tip="Read the packs again after installing new ones">
-          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="refresh" Size="14" /><TextBlock Text="Rescan" /></StackPanel>
+                Content="{l:T 'Find automatically'}" />
+        <Button Command="{Binding RescanCommand}" Margin="0,0,6,6" ToolTip.Tip="{l:T 'Read the packs again after installing new ones'}">
+          <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="refresh" Size="14" /><TextBlock Text="{l:T 'Rescan'}" /></StackPanel>
         </Button>
       </WrapPanel>
     </StackPanel>

@@ -30,7 +30,7 @@ public sealed class CompareViewModel
                 var cmp = p.IsNumeric ? Values.Compare(va, vb) : 0;
                 // Lower is better for a few hidden traits.
                 if (p.Key is "Attr.InjuryProneness" or "Attr.Dirtiness" or "Attr.Controversy" or "Jadedness") cmp = -cmp;
-                return new CompareRow(p.Category, p.Label, Values.Format(p, va, session.NameOf),
+                return new CompareRow(p.DisplayCategory, p.DisplayLabel, Values.Format(p, va, session.NameOf),
                     Values.Format(p, vb, session.NameOf), cmp > 0, cmp < 0);
             })
             .ToList();

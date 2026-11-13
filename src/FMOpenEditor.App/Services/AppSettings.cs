@@ -31,6 +31,9 @@ public sealed class AppSettings
     /// <summary>The game's id of the currency amounts are shown in (28 euro, 86 pound, 87 US dollar).</summary>
     public int CurrencyId { get; set; } = 28;
 
+    /// <summary>Interface language ("en", "pt-BR"); null follows the Windows language. Applied at start-up.</summary>
+    public string? Language { get; set; }
+
     public static string DefaultPath =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FMOpenEditor", "settings.json");
 

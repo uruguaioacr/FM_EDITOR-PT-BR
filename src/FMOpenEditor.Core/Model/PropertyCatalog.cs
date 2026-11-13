@@ -152,7 +152,7 @@ public static class PropertyCatalog
     public static IReadOnlyList<PropertyDef> For(EntityKind kind) => ByKind[kind];
 
     /// <summary>Plural display name of a kind, e.g. "Media sources".</summary>
-    public static string Plural(EntityKind kind) => kind switch
+    public static string Plural(EntityKind kind) => Localization.Loc.T(kind switch
     {
         EntityKind.Staff => "Staff",
         EntityKind.Stadium => "Stadiums",
@@ -165,7 +165,7 @@ public static class PropertyCatalog
         EntityKind.Weather => "Weather",
         EntityKind.Currency => "Currencies",
         _ => kind + "s",
-    };
+    });
 
     public static PropertyDef? Find(EntityKind kind, string key) =>
         ByKey.TryGetValue((kind, key), out var def) ? def : null;

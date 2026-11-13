@@ -12,6 +12,7 @@ using Avalonia.Media;
 using FMOpenEditor.App.Services;
 using FMOpenEditor.App.ViewModels;
 using FMOpenEditor.Core.Model;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.Views;
 
@@ -174,7 +175,7 @@ public partial class BrowserView : UserControl
             var dot = new Ellipse { Width = 7, Height = 7, Margin = new Thickness(8, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
             dot[!Shape.FillProperty] = new DynamicResourceExtension("PendingBrush");
             dot.Bind(IsVisibleProperty, new Binding(nameof(EntityRow.HasPending)));
-            ToolTip.SetTip(dot, "Unsaved changes");
+            ToolTip.SetTip(dot, Loc.T("Unsaved changes"));
             panel.Children.Add(dot);
         }
 
@@ -184,7 +185,7 @@ public partial class BrowserView : UserControl
         text.Classes.Add("link");
         var cell = new Border { Background = Brushes.Transparent, Child = panel, Cursor = new Cursor(StandardCursorType.Hand) };
         cell.Classes.Add("refcell");
-        ToolTip.SetTip(cell, $"Double-click to open this {refKind.ToString().ToLowerInvariant()}");
+        ToolTip.SetTip(cell, Loc.F("Double-click to open this {0}", Loc.T(refKind.ToString().ToLowerInvariant())));
         ToolTip.SetShowDelay(cell, 700);
         cell.DoubleTapped += (_, e) =>
         {

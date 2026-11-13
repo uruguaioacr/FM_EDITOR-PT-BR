@@ -4,6 +4,7 @@ using FMOpenEditor.Core.Definitions;
 using FMOpenEditor.Core.Memory;
 using FMOpenEditor.Core.Model;
 using FMOpenEditor.Core.Research;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.Core.Data;
 
@@ -238,9 +239,9 @@ public sealed class LiveDatabase : IGameDatabase
     {
         var field = Field(entity.Kind, key) ?? throw new NotSupportedException($"{entity.Kind}.{key} is not mapped for {_def.Version}.");
         var prop = PropertyCatalog.Get(entity.Kind, key);
-        if (field.ReadOnly) throw new NotSupportedException($"{prop.Label} can be read but not changed in this version.");
+        if (field.ReadOnly) throw new NotSupportedException(Loc.F("{0} can be read but not changed in this version.", prop.DisplayLabel));
         var addr = FieldAddress(entity.Address, field)
-                   ?? throw new NotSupportedException($"{prop.Label} is empty for this record, so there is nothing to edit in place.");
+                   ?? throw new NotSupportedException(Loc.F("{0} is empty for this record, so there is nothing to edit in place.", prop.DisplayLabel));
 
         switch (field.Type)
         {
@@ -266,7 +267,7 @@ public sealed class LiveDatabase : IGameDatabase
                 var current = _memory.ReadString(target, enc, field.MaxLength);
                 var next = (string?)value ?? "";
                 if (next.Length > current.Length)
-                    throw new NotSupportedException($"{prop.Label} can be at most {current.Length} characters in a live game.");
+                    throw new NotSupportedException(Loc.F("{0} can be at most {1} characters in a live game.", prop.DisplayLabel, current.Length));
                 var bytes = enc.GetBytes(next + "\0");
                 _memory.WriteChecked(target, bytes);
                 break;
@@ -274,11 +275,11 @@ public sealed class LiveDatabase : IGameDatabase
             {
                 // Same rule as other heap strings: rewrite in place, never longer than what is there.
                 var str = _memory.ReadPointer(addr);
-                if (str == 0) throw new NotSupportedException($"{prop.Label} is empty for this record, so there is nothing to edit in place.");
+                if (str == 0) throw new NotSupportedException(Loc.F("{0} is empty for this record, so there is nothing to edit in place.", prop.DisplayLabel));
                 var currentBytes = _memory.ReadInt32(str);
                 var newBytes = Encoding.UTF8.GetBytes((string?)value ?? "");
                 if (currentBytes < 0 || newBytes.Length > currentBytes)
-                    throw new NotSupportedException($"{prop.Label} can be at most {currentBytes} bytes (UTF-8) in a live game.");
+                    throw new NotSupportedException(Loc.F("{0} can be at most {1} bytes (UTF-8) in a live game.", prop.DisplayLabel, currentBytes));
                 var block = new byte[4 + currentBytes + 1];
                 BinaryPrimitives.WriteInt32LittleEndian(block, newBytes.Length);
                 newBytes.CopyTo(block, 4);
@@ -302,7 +303,7 @@ public sealed class LiveDatabase : IGameDatabase
             case var _ when field.Values is { Count: > 0 } stored:
             {
                 var index = value is null ? -1 : (int)Values.ToDouble(value);
-                if (index < 0 || index >= stored.Count) throw new NotSupportedException($"{prop.Label} has no choice number {index}.");
+                if (index < 0 || index >= stored.Count) throw new NotSupportedException(Loc.F("{0} has no choice number {1}.", prop.DisplayLabel, index));
                 WriteNumber(addr, field, stored[index]);
                 break;
             }

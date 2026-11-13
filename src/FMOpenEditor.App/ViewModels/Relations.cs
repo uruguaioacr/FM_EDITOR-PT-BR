@@ -1,5 +1,6 @@
 using FMOpenEditor.Core.Editing;
 using FMOpenEditor.Core.Model;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.ViewModels;
 
@@ -42,18 +43,18 @@ public sealed record RelationSpec(string Title, EntityKind Kind, string Key, str
     {
         EntityKind.Club =>
         [
-            new("Players", EntityKind.Player, "Contract.Club", "CurrentAbility", ["Age", "Nation", "CurrentAbility"]),
-            new("Staff", EntityKind.Staff, "Contract.Club", "CurrentAbility", ["Role", "Age", "Nation"]),
+            new(Loc.T("Players"), EntityKind.Player, "Contract.Club", "CurrentAbility", ["Age", "Nation", "CurrentAbility"]),
+            new(Loc.T("Staff"), EntityKind.Staff, "Contract.Club", "CurrentAbility", ["Role", "Age", "Nation"]),
         ],
         EntityKind.Competition =>
         [
-            new("Clubs", EntityKind.Club, "League", "Reputation", ["Nation", "Reputation"]),
+            new(Loc.T("Clubs"), EntityKind.Club, "League", "Reputation", ["Nation", "Reputation"]),
         ],
         EntityKind.Nation =>
         [
-            new("Players", EntityKind.Player, "Nation", "CurrentAbility", ["Age", "Contract.Club", "CurrentAbility"]),
-            new("Clubs", EntityKind.Club, "Nation", "Reputation", ["League", "Reputation"]),
-            new("Competitions", EntityKind.Competition, "Nation", "Reputation", ["Reputation"]),
+            new(Loc.T("Players"), EntityKind.Player, "Nation", "CurrentAbility", ["Age", "Contract.Club", "CurrentAbility"]),
+            new(Loc.T("Clubs"), EntityKind.Club, "Nation", "Reputation", ["League", "Reputation"]),
+            new(Loc.T("Competitions"), EntityKind.Competition, "Nation", "Reputation", ["Reputation"]),
         ],
         _ => [],
     };
@@ -125,7 +126,7 @@ public sealed class RelatedListViewModel : EditorTabViewModel
     private string Detail(Entity e, string key)
     {
         var text = _session.Format(e, key);
-        return key == "Age" && text.Length > 0 && text != "—" ? $"{text} years" : text;
+        return key == "Age" && text.Length > 0 && text != "—" ? Loc.F("{0} years", text) : text;
     }
 
     private List<RelatedItem> Build()

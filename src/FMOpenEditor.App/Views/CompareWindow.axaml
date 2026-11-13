@@ -1,10 +1,11 @@
 <Window xmlns="https://github.com/avaloniaui"
+        xmlns:l="using:FMOpenEditor.App.Localization"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:FMOpenEditor.App.ViewModels"
         xmlns:c="using:FMOpenEditor.App.Controls"
         x:Class="FMOpenEditor.App.Views.CompareWindow"
         x:DataType="vm:CompareViewModel"
-        Title="Compare" Icon="/Assets/icon.ico" Width="780" Height="840" WindowStartupLocation="CenterOwner">
+        Title="{l:T 'Compare'}" Icon="/Assets/icon.ico" Width="780" Height="840" WindowStartupLocation="CenterOwner">
   <Window.Styles>
     <Style Selector="TextBlock.better">
       <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
@@ -32,8 +33,8 @@
         <!-- The two sides, face to face -->
         <Grid DockPanel.Dock="Top" ColumnDefinitions="2*,*,*" Margin="0,0,0,14">
           <StackPanel VerticalAlignment="Bottom" Spacing="2">
-            <TextBlock Classes="eyebrow" Text="SIDE BY SIDE" />
-            <TextBlock Classes="h1" Text="Compare" />
+            <TextBlock Classes="eyebrow" Text="{l:T 'SIDE BY SIDE'}" />
+            <TextBlock Classes="h1" Text="{l:T 'Compare'}" />
           </StackPanel>
           <StackPanel Grid.Column="1" Spacing="8">
             <Border Width="64" Height="64" CornerRadius="32" ClipToBounds="True" HorizontalAlignment="Left"

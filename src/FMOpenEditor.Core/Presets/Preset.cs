@@ -67,6 +67,10 @@ public sealed class Preset
     public List<PresetAction> Actions { get; set; } = [];
 
     [JsonIgnore] public string? SourcePath { get; set; }
+
+    /// <summary>Name and description in the interface language (built-in presets are translated).</summary>
+    [JsonIgnore] public string DisplayName => Localization.Loc.T(Name);
+    [JsonIgnore] public string? DisplayDescription => Description is null ? null : Localization.Loc.T(Description);
     [JsonIgnore] public bool IsBuiltIn { get; set; }
 
     public static readonly JsonSerializerOptions JsonOptions = new()

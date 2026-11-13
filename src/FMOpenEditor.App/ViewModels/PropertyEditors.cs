@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using FMOpenEditor.Core.Editing;
 using FMOpenEditor.Core.Model;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.ViewModels;
 
@@ -11,8 +12,8 @@ public abstract partial class PropertyEditorViewModel(EditorSession session, Ent
     public Entity Entity { get; } = entity;
     public PropertyDef Def { get; } = def;
 
-    public string Label => Def.Label;
-    public string? Tooltip => Def.Description ?? Def.Key;
+    public string Label => Def.DisplayLabel;
+    public string? Tooltip => Def.DisplayDescription ?? Def.Key;
     public bool IsEditable => Session.CanEdit(Entity.Kind, Def.Key);
 
     // Attributes sit two to a row, so they get a narrower label and spinner.
@@ -132,7 +133,7 @@ public sealed partial class ChoiceEditorViewModel : PropertyEditorViewModel
 {
     public ChoiceEditorViewModel(EditorSession s, Entity e, PropertyDef d) : base(s, e, d) => Load();
 
-    public IReadOnlyList<string> Choices => Def.Choices ?? [];
+    public IReadOnlyList<string> Choices => Def.DisplayChoices ?? [];
 
     [ObservableProperty] private int _selectedIndex = -1;
 
@@ -156,7 +157,7 @@ public sealed partial class ReferenceEditorViewModel : PropertyEditorViewModel
     {
         _open = open;
         var kind = d.RefKind!.Value;
-        Options = [new RefOption(null, "— none —"),
+        Options = [new RefOption(null, Loc.T("— none —")),
                    .. s.GetAll(kind).Select(x => new RefOption(x.Id, s.NameOf(kind, x.Id))).OrderBy(o => o.Name)];
         Load();
     }
@@ -169,7 +170,7 @@ public sealed partial class ReferenceEditorViewModel : PropertyEditorViewModel
     /// <summary>Whether there is something to jump to (a value, and a page to show it in).</summary>
     public bool CanOpen => _open is not null && Selected?.Id is not null;
     public bool ShowOpen => _open is not null;
-    public string OpenTip => Selected?.Id is null ? "" : $"Open {Selected.Name}";
+    public string OpenTip => Selected?.Id is null ? "" : Loc.F("Open {0}", Selected.Name);
 
     protected override void LoadValue(object? v) => Selected = Options.FirstOrDefault(o => o.Id == v as int?) ?? Options[0];
     partial void OnSelectedChanged(RefOption? value)

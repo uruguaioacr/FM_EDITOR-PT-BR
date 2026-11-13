@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using FMOpenEditor.App.Services;
 using FMOpenEditor.App.ViewModels;
 using FMOpenEditor.App.Views;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App;
 
@@ -11,6 +12,8 @@ public partial class App : Application
 {
     public override void Initialize()
     {
+        // The language first: every screen reads its text as it is built.
+        Loc.Use(Loc.Resolve(AppServices.Settings.Language));
         AvaloniaXamlLoader.Load(this);
         // Apply the saved theme before any window exists, so there is no flash of the wrong one.
         var settings = AppServices.Settings;

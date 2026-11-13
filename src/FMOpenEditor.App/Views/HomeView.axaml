@@ -1,4 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:l="using:FMOpenEditor.App.Localization"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:FMOpenEditor.App.ViewModels"
              xmlns:c="using:FMOpenEditor.App.Controls"
@@ -13,28 +14,28 @@
           <Border Classes="pill" HorizontalAlignment="Left">
             <StackPanel Orientation="Horizontal" Spacing="7">
               <c:Icon Kind="sparkle" Size="13" TextElement.Foreground="{DynamicResource AccentBrush}" />
-              <TextBlock Text="Free and open source, forever" FontSize="12" FontWeight="Medium" />
+              <TextBlock Text="{l:T 'Free and open source, forever'}" FontSize="12" FontWeight="Medium" />
             </StackPanel>
           </Border>
 
           <StackPanel>
-            <TextBlock Classes="display" Text="Your save," />
-            <TextBlock Classes="display chroma" Text="your rules." />
+            <TextBlock Classes="display" Text="{l:T 'Your save,'}" />
+            <TextBlock Classes="display chroma" Text="{l:T 'your rules.'}" />
           </StackPanel>
 
           <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="15" LineHeight="23" MaxWidth="520" HorizontalAlignment="Left"
-                     Text="FM OpenEditor reads Football Manager while you play. Browse every player, staff member, club and competition, change what you like, and save it straight into the running game." />
+                     Text="{l:T 'FM OpenEditor reads Football Manager while you play. Browse every player, staff member, club and competition, change what you like, and save it straight into the running game.'}" />
 
           <StackPanel x:Name="TourConnect" Orientation="Horizontal" Spacing="10" Margin="0,4,0,0" HorizontalAlignment="Left">
             <Button Classes="accent hero" Command="{Binding ConnectGameCommand}">
               <StackPanel Orientation="Horizontal" Spacing="9">
                 <c:Icon Kind="link" Size="17" />
-                <TextBlock Text="Connect to Football Manager" />
+                <TextBlock Text="{l:T 'Connect to Football Manager'}" />
               </StackPanel>
             </Button>
           </StackPanel>
 
-          <TextBlock Classes="muted" FontSize="12.5" Text="Start Football Manager and load your save first, then connect." />
+          <TextBlock Classes="muted" FontSize="12.5" Text="{l:T 'Start Football Manager and load your save first, then connect.'}" />
         </StackPanel>
 
         <!-- Tiki on a glass disc -->
@@ -70,43 +71,43 @@
         <Panel><Border Classes="glass lift" Margin="0,0,12,0">
           <StackPanel Spacing="10">
             <Border Classes="tile" HorizontalAlignment="Left"><c:Icon Kind="bolt" Size="19" /></Border>
-            <TextBlock Classes="h2" Text="One-click presets" />
+            <TextBlock Classes="h2" Text="{l:T 'One-click presets'}" />
             <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="12.5" LineHeight="19"
-                       Text="Heal, Inspire, Remove bans, Make WonderKid, Rich owner, Top facilities. Write your own as JSON and share them." />
+                       Text="{l:T 'Heal, Inspire, Remove bans, Make WonderKid, Rich owner, Top facilities. Write your own as JSON and share them.'}" />
           </StackPanel>
         </Border></Panel>
         <Panel><Border Classes="glass lift" Margin="4,0,8,0">
           <StackPanel Spacing="10">
             <Border Classes="tile" HorizontalAlignment="Left"><c:Icon Kind="edit" Size="19" /></Border>
-            <TextBlock Classes="h2" Text="Edit anything" />
+            <TextBlock Classes="h2" Text="{l:T 'Edit anything'}" />
             <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="12.5" LineHeight="19"
-                       Text="Names, nationality, attributes, positions, contracts, wages, reputation, finances, facilities, standings and nation rules." />
+                       Text="{l:T 'Names, nationality, attributes, positions, contracts, wages, reputation, finances, facilities, standings and nation rules.'}" />
           </StackPanel>
         </Border></Panel>
         <Panel><Border Classes="glass lift" Margin="8,0,4,0">
           <StackPanel Spacing="10">
             <Border Classes="tile" HorizontalAlignment="Left"><c:Icon Kind="filter" Size="19" /></Border>
-            <TextBlock Classes="h2" Text="Search and mass edit" />
+            <TextBlock Classes="h2" Text="{l:T 'Search and mass edit'}" />
             <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="12.5" LineHeight="19"
-                       Text="Filter by any field, then change a whole squad or search result at once. Compare two players side by side." />
+                       Text="{l:T 'Filter by any field, then change a whole squad or search result at once. Compare two players side by side.'}" />
           </StackPanel>
         </Border></Panel>
         <Panel><Border Classes="glass lift" Margin="12,0,0,0">
           <StackPanel Spacing="10">
             <Border Classes="tile" HorizontalAlignment="Left"><c:Icon Kind="snow" Size="19" /></Border>
-            <TextBlock Classes="h2" Text="Freeze or only-up" />
+            <TextBlock Classes="h2" Text="{l:T 'Freeze or only-up'}" />
             <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="12.5" LineHeight="19"
-                       Text="Lock a player's attributes, or let them improve but never decline, while the game runs." />
+                       Text="{l:T 'Lock a player’s attributes, or let them improve but never decline, while the game runs.'}" />
           </StackPanel>
         </Border></Panel>
       </UniformGrid>
 
       <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="11.5" HorizontalAlignment="Center" TextAlignment="Center"
-                 Text="Back up your save before editing. FM OpenEditor is a fan project, not affiliated with Sports Interactive or SEGA. Licensed under GPL-3.0." />
+                 Text="{l:T 'Back up your save before editing. FM OpenEditor is a fan project, not affiliated with Sports Interactive or SEGA. Licensed under GPL-3.0.'}" />
 
       <!-- Credit -->
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4" Margin="0,-12,0,0">
-        <TextBlock Classes="muted" FontSize="12" VerticalAlignment="Center" Text="Developed by" />
+        <TextBlock Classes="muted" FontSize="12" VerticalAlignment="Center" Text="{l:T 'Developed by'}" />
         <Button x:Name="AuthorLink" Classes="link" Click="OnAuthorClick"
                 ToolTip.Tip="github.com/ElMariones">
           <TextBlock Text="Mario Landaburu" FontSize="12" FontWeight="SemiBold" />

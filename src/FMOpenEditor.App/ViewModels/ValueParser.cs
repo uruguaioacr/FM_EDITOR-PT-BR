@@ -1,6 +1,7 @@
 using FMOpenEditor.Core.Editing;
 using FMOpenEditor.Core.Model;
 using FMOpenEditor.Core.Search;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.ViewModels;
 
@@ -20,19 +21,20 @@ public static class ValueParser
                 var match = session.GetAll(kind)
                     .FirstOrDefault(e => SearchEngine.Normalize(session.NameOf(kind, e.Id)) == wanted)
                     ?? session.GetAll(kind).FirstOrDefault(e => SearchEngine.Normalize(session.NameOf(kind, e.Id)).Contains(wanted));
-                return match?.Id ?? throw new FormatException($"No {kind.ToString().ToLowerInvariant()} called '{text}'.");
+                return match?.Id ?? throw new FormatException(Loc.F("No {0} called '{1}'.", Loc.T(kind.ToString().ToLowerInvariant()), text));
 
             case ValueKind.Choice when def.Choices is { } choices:
-                var idx = choices.ToList().FindIndex(c => string.Equals(c, text, StringComparison.OrdinalIgnoreCase));
+                var idx = choices.ToList().FindIndex(c => string.Equals(c, text, StringComparison.OrdinalIgnoreCase)
+                                                        || string.Equals(Loc.T(c), text, StringComparison.OrdinalIgnoreCase));
                 if (idx >= 0) return idx;
-                return int.TryParse(text, out var n) ? n : throw new FormatException($"'{text}' isn't a valid {def.Label}.");
+                return int.TryParse(text, out var n) ? n : throw new FormatException(Loc.F("'{0}' isn't a valid {1}.", text, def.DisplayLabel));
 
             case ValueKind.Boolean:
                 return text.ToLowerInvariant() switch
                 {
-                    "yes" or "y" or "true" or "1" or "on" => true,
-                    "no" or "n" or "false" or "0" or "off" => false,
-                    _ => throw new FormatException("Use yes or no."),
+                    "yes" or "y" or "true" or "1" or "on" or "sim" or "s" => true,
+                    "no" or "n" or "false" or "0" or "off" or "não" or "nao" => false,
+                    _ => throw new FormatException(Loc.T("Use yes or no.")),
                 };
 
             case ValueKind.Money:

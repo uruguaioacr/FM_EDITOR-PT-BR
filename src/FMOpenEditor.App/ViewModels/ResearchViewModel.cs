@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMOpenEditor.App.ViewModels.Research;
 using FMOpenEditor.Core.Memory;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.ViewModels;
 
@@ -21,7 +22,7 @@ public sealed partial class ResearchViewModel : ObservableObject
     public ResearchViewModel(IMemoryAccess? memory, string? moduleInfo, nint moduleBase = 0, long moduleSize = 0)
     {
         _scanner = memory is null ? null : new MemoryScanner(memory);
-        ModuleInfo = moduleInfo ?? "Not attached to the game.";
+        ModuleInfo = moduleInfo ?? Loc.T("Not attached to the game.");
         if (memory is null) return;
 
         var context = new ResearchContext(memory, moduleBase, moduleSize, GameProcess.DefaultModule);
@@ -74,13 +75,13 @@ public sealed partial class ResearchViewModel : ObservableObject
     [RelayCommand]
     private async Task FirstScan()
     {
-        if (_scanner is null || !TryNumber(Value, out var v)) { ResultText = "Enter a number to search for."; return; }
+        if (_scanner is null || !TryNumber(Value, out var v)) { ResultText = Loc.T("Enter a number to search for."); return; }
         IsBusy = true;
-        ResultText = "Scanning…";
+        ResultText = Loc.T("Scanning…");
         try
         {
             var n = await Task.Run(() => _scanner.FirstScan(v, Type));
-            ShowHits($"{n:N0} addresses hold {v}.");
+            ShowHits(Loc.F("{0:N0} addresses hold {1}.", n, v));
         }
         catch (Exception ex) { ResultText = ex.Message; }
         finally { IsBusy = false; }
@@ -91,12 +92,12 @@ public sealed partial class ResearchViewModel : ObservableObject
     {
         if (_scanner is null) return;
         double v = 0;
-        if (Compare == ScanCompare.Exact && !TryNumber(Value, out v)) { ResultText = "Enter the new value."; return; }
+        if (Compare == ScanCompare.Exact && !TryNumber(Value, out v)) { ResultText = Loc.T("Enter the new value."); return; }
         IsBusy = true;
         try
         {
             var n = await Task.Run(() => _scanner.NextScan(Compare, v));
-            ShowHits($"{n:N0} addresses left.");
+            ShowHits(Loc.F("{0:N0} addresses left.", n));
         }
         finally { IsBusy = false; }
     }
@@ -113,7 +114,7 @@ public sealed partial class ResearchViewModel : ObservableObject
     private void Write()
     {
         if (_scanner is null || SelectedHit is null || !TryNumber(WriteValue, out var v)) return;
-        ResultText = _scanner.WriteValue(SelectedHit.Address, v) ? $"Wrote {v} at {SelectedHit.AddressText}." : "Write failed.";
+        ResultText = _scanner.WriteValue(SelectedHit.Address, v) ? Loc.F("Wrote {0} at {1}.", v, SelectedHit.AddressText) : Loc.T("Write failed.");
         ShowHits(ResultText);
     }
 
@@ -136,7 +137,7 @@ public sealed partial class ResearchViewModel : ObservableObject
     private void CalcOffset()
     {
         if (TryHex(RecordBase, out var b) && TryHex(FieldAddress, out var f))
-            OffsetResult = f >= b ? $"offset 0x{f - b:X}" : "field address is below the record base";
+            OffsetResult = f >= b ? Loc.F("offset 0x{0:X}", f - b) : Loc.T("field address is below the record base");
         else OffsetResult = "";
     }
 
@@ -149,7 +150,7 @@ public sealed partial class ResearchViewModel : ObservableObject
             var cur = _scanner.ReadValue(a);
             Hits.Add(new ScanHit(a, $"0x{a:X}", cur?.ToString(CultureInfo.InvariantCulture) ?? "?"));
         }
-        ResultText = _scanner.Results.Count > 500 ? $"{summary} Showing the first 500." : summary;
+        ResultText = _scanner.Results.Count > 500 ? summary + Loc.T(" Showing the first 500.") : summary;
     }
 
     private static bool TryNumber(string? s, out double v) =>

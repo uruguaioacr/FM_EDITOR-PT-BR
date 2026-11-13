@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using FMOpenEditor.App.Services;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.Controls;
 
@@ -94,12 +95,12 @@ public partial class TourOverlay : UserControl
     {
         var step = _steps[_index];
         var last = _index == _steps.Count - 1;
-        StepLabel.Text = $"{_index + 1} OF {_steps.Count}";
-        TitleText.Text = step.Title;
-        BodyText.Text = step.Text;
+        StepLabel.Text = Loc.F("{0} OF {1}", _index + 1, _steps.Count);
+        TitleText.Text = Loc.T(step.Title);
+        BodyText.Text = Loc.T(step.Text);
         BackButton.IsVisible = _index > 0;
         SkipButton.IsVisible = !last;
-        NextButton.Content = last ? "Got it" : "Next";
+        NextButton.Content = last ? Loc.T("Got it") : Loc.T("Next");
         if (last) Guide.Cheer();
         else Guide.Blink();
 

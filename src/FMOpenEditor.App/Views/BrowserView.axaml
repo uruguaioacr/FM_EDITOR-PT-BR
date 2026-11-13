@@ -1,4 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:l="using:FMOpenEditor.App.Localization"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:FMOpenEditor.App.ViewModels"
              xmlns:views="using:FMOpenEditor.App.Views"
@@ -37,17 +38,17 @@
                        ToolTip.Tip="{Binding Summary}" />
           </StackPanel>
           <StackPanel x:Name="Toolbar" Classes="toolbar" Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-            <ToggleButton IsChecked="{Binding ShowFilters}" ToolTip.Tip="Advanced search: filter by any field">
-              <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="filter" Size="15" /><TextBlock Classes="label" Text="Advanced search" /></StackPanel>
+            <ToggleButton IsChecked="{Binding ShowFilters}" ToolTip.Tip="{l:T 'Advanced search: filter by any field'}">
+              <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="filter" Size="15" /><TextBlock Classes="label" Text="{l:T 'Advanced search'}" /></StackPanel>
             </ToggleButton>
-            <ToggleButton IsChecked="{Binding ShowMassEdit}" ToolTip.Tip="Mass edit: change every selected row at once">
-              <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="edit" Size="15" /><TextBlock Classes="label" Text="Mass edit" /></StackPanel>
+            <ToggleButton IsChecked="{Binding ShowMassEdit}" ToolTip.Tip="{l:T 'Mass edit: change every selected row at once'}">
+              <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="edit" Size="15" /><TextBlock Classes="label" Text="{l:T 'Mass edit'}" /></StackPanel>
             </ToggleButton>
-            <Button Command="{Binding CompareCommand}" ToolTip.Tip="Compare: select two rows, then compare them side by side">
-              <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="compare" Size="15" /><TextBlock Classes="label" Text="Compare" /></StackPanel>
+            <Button Command="{Binding CompareCommand}" ToolTip.Tip="{l:T 'Compare: select two rows, then compare them side by side'}">
+              <StackPanel Orientation="Horizontal" Spacing="7"><c:Icon Kind="compare" Size="15" /><TextBlock Classes="label" Text="{l:T 'Compare'}" /></StackPanel>
             </Button>
           </StackPanel>
-          <TextBox Grid.Row="1" Grid.ColumnSpan="2" Classes="search" Watermark="Search by name…" Text="{Binding SearchText}" Margin="0,12,0,0">
+          <TextBox Grid.Row="1" Grid.ColumnSpan="2" Classes="search" Watermark="{l:T 'Search by name…'}" Text="{Binding SearchText}" Margin="0,12,0,0">
             <TextBox.InnerLeftContent>
               <c:Icon Kind="search" Size="16" Margin="14,0,-4,0" VerticalAlignment="Center" TextElement.Foreground="{DynamicResource MutedBrush}" />
             </TextBox.InnerLeftContent>
@@ -58,7 +59,7 @@
         <WrapPanel x:Name="TourPresets" DockPanel.Dock="Top" Margin="0,0,0,6">
           <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="0,0,10,6">
             <c:Icon Kind="bolt" Size="14" TextElement.Foreground="{DynamicResource AccentBrush}" />
-            <TextBlock Text="PRESETS" Classes="eyebrow" VerticalAlignment="Center" />
+            <TextBlock Text="{l:T 'PRESETS'}" Classes="eyebrow" VerticalAlignment="Center" />
           </StackPanel>
           <ItemsControl ItemsSource="{Binding QuickPresets}">
             <ItemsControl.ItemsPanel>
@@ -66,20 +67,20 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="presets:Preset">
-                <Button Classes="preset" Content="{Binding Name}" ToolTip.Tip="{Binding Description}"
+                <Button Classes="preset" Content="{Binding DisplayName}" ToolTip.Tip="{Binding DisplayDescription}"
                         Command="{Binding #Root.((vm:BrowserViewModel)DataContext).ApplyPresetCommand}"
                         CommandParameter="{Binding}" />
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
           <Button Classes="preset" IsVisible="{Binding HasOtherPresets}">
-            <StackPanel Orientation="Horizontal" Spacing="5"><TextBlock Text="More" /><c:Icon Kind="chevron" Size="13" /></StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="5"><TextBlock Text="{l:T 'More'}" /><c:Icon Kind="chevron" Size="13" /></StackPanel>
             <Button.Flyout>
               <Flyout Placement="BottomEdgeAlignedLeft">
                 <ItemsControl ItemsSource="{Binding OtherPresets}">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="presets:Preset">
-                      <Button Classes="ghost" Content="{Binding Name}" ToolTip.Tip="{Binding Description}" HorizontalAlignment="Stretch"
+                      <Button Classes="ghost" Content="{Binding DisplayName}" ToolTip.Tip="{Binding DisplayDescription}" HorizontalAlignment="Stretch"
                               Margin="0,1"
                               Command="{Binding #Root.((vm:BrowserViewModel)DataContext).ApplyPresetCommand}"
                               CommandParameter="{Binding}" />
@@ -101,15 +102,15 @@
                     <ComboBox ItemsSource="{Binding Properties}" SelectedItem="{Binding SelectedProperty}" Width="230">
                       <ComboBox.ItemTemplate>
                         <DataTemplate x:DataType="model:PropertyDef">
-                          <StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="{Binding Label}" /><TextBlock Text="{Binding Category}" Foreground="{DynamicResource MutedBrush}" /></StackPanel>
+                          <StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="{Binding DisplayLabel}" /><TextBlock Text="{Binding DisplayCategory}" Foreground="{DynamicResource MutedBrush}" /></StackPanel>
                         </DataTemplate>
                       </ComboBox.ItemTemplate>
                     </ComboBox>
                     <ComboBox ItemsSource="{Binding Ops}" SelectedItem="{Binding Op}" Width="140" />
                     <TextBox Text="{Binding Value}" Watermark="{Binding Hint}" Width="150" IsVisible="{Binding NeedsValue}" />
-                    <TextBlock Text="and" VerticalAlignment="Center" IsVisible="{Binding NeedsSecondValue}" />
+                    <TextBlock Text="{l:T 'and'}" VerticalAlignment="Center" IsVisible="{Binding NeedsSecondValue}" />
                     <TextBox Text="{Binding Value2}" Watermark="{Binding Hint}" Width="150" IsVisible="{Binding NeedsSecondValue}" />
-                    <Button Classes="icon ghost" ToolTip.Tip="Remove this condition"
+                    <Button Classes="icon ghost" ToolTip.Tip="{l:T 'Remove this condition'}"
                             Command="{Binding #Root.((vm:BrowserViewModel)DataContext).RemoveFilterCommand}"
                             CommandParameter="{Binding}">
                       <c:Icon Kind="close" Size="14" />
@@ -120,12 +121,12 @@
             </ItemsControl>
             <StackPanel Orientation="Horizontal" Spacing="6">
               <Button Command="{Binding AddFilterCommand}">
-                <StackPanel Orientation="Horizontal" Spacing="6"><c:Icon Kind="plus" Size="14" /><TextBlock Text="Add condition" /></StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="6"><c:Icon Kind="plus" Size="14" /><TextBlock Text="{l:T 'Add condition'}" /></StackPanel>
               </Button>
               <Button Classes="accent" Command="{Binding SearchCommand}" IsDefault="True">
-                <StackPanel Orientation="Horizontal" Spacing="6"><c:Icon Kind="search" Size="14" /><TextBlock Text="Search" /></StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="6"><c:Icon Kind="search" Size="14" /><TextBlock Text="{l:T 'Search'}" /></StackPanel>
               </Button>
-              <Button Classes="ghost" Content="Clear" Command="{Binding ClearFiltersCommand}" />
+              <Button Classes="ghost" Content="{l:T 'Clear'}" Command="{Binding ClearFiltersCommand}" />
             </StackPanel>
           </StackPanel>
         </Border>
@@ -133,18 +134,19 @@
         <!-- Mass edit -->
         <Border x:Name="MassPanel" DockPanel.Dock="Top" Classes="inset" Margin="0,0,0,10" IsVisible="{Binding ShowMassEdit}">
           <StackPanel Orientation="Horizontal" Spacing="6">
-            <TextBlock Text="For the selected rows:" VerticalAlignment="Center" FontWeight="Medium" />
+            <TextBlock Text="{l:T 'For the selected rows:'}" VerticalAlignment="Center" FontWeight="Medium" />
             <ComboBox ItemsSource="{Binding EditableProperties}" SelectedItem="{Binding MassProperty}" Width="230">
               <ComboBox.ItemTemplate>
                 <DataTemplate x:DataType="model:PropertyDef">
-                  <StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="{Binding Label}" /><TextBlock Text="{Binding Category}" Foreground="{DynamicResource MutedBrush}" /></StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="{Binding DisplayLabel}" /><TextBlock Text="{Binding DisplayCategory}" Foreground="{DynamicResource MutedBrush}" /></StackPanel>
                 </DataTemplate>
               </ComboBox.ItemTemplate>
             </ComboBox>
             <ComboBox ItemsSource="{Binding MassOps}" SelectedItem="{Binding MassOp}" Width="160" />
-            <TextBox Text="{Binding MassValue}" Width="140" Watermark="value" />
-            <Button Classes="accent" Command="{Binding ApplyMassEditCommand}"
-                    Content="{Binding SelectedCount, StringFormat='Apply to {0}'}" />
+            <TextBox Text="{Binding MassValue}" Width="140" Watermark="{l:T 'value'}" />
+            <Button Classes="accent" Command="{Binding ApplyMassEditCommand}">
+              <TextBlock><Run Text="{l:T 'Apply to '}" /><Run Text="{Binding SelectedCount, Mode=OneWay}" /></TextBlock>
+            </Button>
           </StackPanel>
         </Border>
 
@@ -154,17 +156,17 @@
                     GridLinesVisibility="Horizontal" HeadersVisibility="Column">
             <DataGrid.ContextMenu>
               <ContextMenu>
-                <MenuItem Header="Release on a free" Command="{Binding ReleaseOnFreeCommand}" />
+                <MenuItem Header="{l:T 'Release on a free'}" Command="{Binding ReleaseOnFreeCommand}" />
                 <Separator />
-                <MenuItem Header="Freeze attributes" Command="{Binding FreezeCommand}">
+                <MenuItem Header="{l:T 'Freeze attributes'}" Command="{Binding FreezeCommand}">
                   <MenuItem.Icon><c:Icon Kind="snow" Size="15" /></MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Attributes can only go up" Command="{Binding OnlyUpCommand}">
+                <MenuItem Header="{l:T 'Attributes can only go up'}" Command="{Binding OnlyUpCommand}">
                   <MenuItem.Icon><c:Icon Kind="up" Size="15" /></MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Remove freeze / only-up" Command="{Binding UnwatchCommand}" />
+                <MenuItem Header="{l:T 'Remove freeze / only-up'}" Command="{Binding UnwatchCommand}" />
                 <Separator />
-                <MenuItem Header="Compare the two selected" Command="{Binding CompareCommand}">
+                <MenuItem Header="{l:T 'Compare the two selected'}" Command="{Binding CompareCommand}">
                   <MenuItem.Icon><c:Icon Kind="compare" Size="15" /></MenuItem.Icon>
                 </MenuItem>
               </ContextMenu>
@@ -174,8 +176,8 @@
           <!-- Nothing matched -->
           <StackPanel IsVisible="{Binding IsEmpty}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
             <c:Mascot Width="110" Height="110" HorizontalAlignment="Center" Opacity="0.9" />
-            <TextBlock Classes="h2" Text="Nothing matches that search" HorizontalAlignment="Center" />
-            <TextBlock Classes="muted" Text="Try a shorter name, or loosen a condition." HorizontalAlignment="Center" />
+            <TextBlock Classes="h2" Text="{l:T 'Nothing matches that search'}" HorizontalAlignment="Center" />
+            <TextBlock Classes="muted" Text="{l:T 'Try a shorter name, or loosen a condition.'}" HorizontalAlignment="Center" />
           </StackPanel>
         </Panel>
       </DockPanel>
@@ -188,8 +190,8 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10"
                     IsVisible="{Binding Editor, Converter={x:Static ObjectConverters.IsNull}}">
           <c:Mascot Width="120" Height="120" HorizontalAlignment="Center" />
-          <TextBlock Classes="h2" Text="Pick someone from the list" HorizontalAlignment="Center" />
-          <TextBlock Classes="muted" Text="Everything about them opens here, ready to edit." HorizontalAlignment="Center" />
+          <TextBlock Classes="h2" Text="{l:T 'Pick someone from the list'}" HorizontalAlignment="Center" />
+          <TextBlock Classes="muted" Text="{l:T 'Everything about them opens here, ready to edit.'}" HorizontalAlignment="Center" />
         </StackPanel>
         <ContentControl x:Name="EditorHost" Content="{Binding Editor}" />
       </Panel>

@@ -1,4 +1,5 @@
 <Window xmlns="https://github.com/avaloniaui"
+        xmlns:l="using:FMOpenEditor.App.Localization"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:FMOpenEditor.App.ViewModels"
         xmlns:views="using:FMOpenEditor.App.Views"
@@ -35,7 +36,7 @@
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
             <!-- Tiki turns warm while there are unsaved changes -->
             <c:Mascot x:Name="TopMascot" Width="36" Height="36" IsWarm="{Binding HasPending}"
-                      ToolTip.Tip="Tiki turns warm while you have unsaved changes" />
+                      ToolTip.Tip="{l:T 'Tiki turns warm while you have unsaved changes'}" />
             <StackPanel VerticalAlignment="Center" Spacing="-2">
               <TextBlock FontSize="16" FontWeight="Bold" LetterSpacing="-0.4">
                 <Run Text="FM" /><Run Text=" Open" Foreground="{DynamicResource AccentBrush}" /><Run Text="Editor" />
@@ -67,7 +68,7 @@
               <Button Command="{Binding GoBackCommand}" ToolTip.Tip="{Binding BackTip}" ToolTip.ShowOnDisabled="True">
                 <StackPanel Orientation="Horizontal" Spacing="7">
                   <c:Icon Kind="back" Size="15" />
-                  <TextBlock Text="Back" />
+                  <TextBlock Text="{l:T 'Back'}" />
                 </StackPanel>
               </Button>
               <Button Command="{Binding GoForwardCommand}" ToolTip.Tip="{Binding ForwardTip}" ToolTip.ShowOnDisabled="True">
@@ -75,22 +76,22 @@
               </Button>
             </StackPanel>
             <Button Command="{Binding RefreshCommand}" IsVisible="{Binding IsConnected}"
-                    ToolTip.Tip="Re-read the game's lists (new players, transfers)">
+                    ToolTip.Tip="{l:T 'Re-read the game’s lists (new players, transfers)'}">
               <StackPanel Orientation="Horizontal" Spacing="7">
                 <c:Icon Kind="refresh" Size="15" />
-                <TextBlock Text="Re-read" />
+                <TextBlock Text="{l:T 'Re-read'}" />
               </StackPanel>
             </Button>
             <Button Command="{Binding DisconnectCommand}" IsVisible="{Binding IsConnected}">
               <StackPanel Orientation="Horizontal" Spacing="7">
                 <c:Icon Kind="power" Size="15" />
-                <TextBlock Text="Disconnect" />
+                <TextBlock Text="{l:T 'Disconnect'}" />
               </StackPanel>
             </Button>
 
             <StackPanel x:Name="TourAppearance" Orientation="Horizontal" Spacing="6">
               <!-- Day / night -->
-              <Button Classes="icon" Command="{Binding ToggleThemeCommand}" ToolTip.Tip="Switch between day and night">
+              <Button Classes="icon" Command="{Binding ToggleThemeCommand}" ToolTip.Tip="{l:T 'Switch between day and night'}">
                 <Panel x:Name="ThemeIcon" RenderTransformOrigin="50%,50%">
                   <c:Icon Kind="sun" IsVisible="{Binding IsNight}" />
                   <c:Icon Kind="moon" IsVisible="{Binding !IsNight}" />
@@ -98,7 +99,7 @@
               </Button>
 
               <!-- Settings -->
-              <Button Classes="icon" ToolTip.Tip="Appearance and graphics" x:Name="SettingsButton">
+              <Button Classes="icon" ToolTip.Tip="{l:T 'Appearance and graphics'}" x:Name="SettingsButton">
                 <c:Icon Kind="settings" />
                 <Button.Flyout>
                   <Flyout Placement="BottomEdgeAlignedRight">
@@ -108,7 +109,7 @@
               </Button>
 
               <!-- Replay Tiki's tour -->
-              <Button Classes="icon" ToolTip.Tip="Show me around" Click="OnHelp">
+              <Button Classes="icon" ToolTip.Tip="{l:T 'Show me around'}" Click="OnHelp">
                 <c:Icon Kind="help" />
               </Button>
             </StackPanel>
@@ -152,27 +153,27 @@
             <TextBlock x:Name="StatusText" Text="{Binding Status}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
           </StackPanel>
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsConnected}">
-            <CheckBox Content="Save instantly" IsChecked="{Binding AutoSave}"
-                      ToolTip.Tip="Write every edit to the game as you make it, instead of collecting them for Save changes" />
+            <CheckBox Content="{l:T 'Save instantly'}" IsChecked="{Binding AutoSave}"
+                      ToolTip.Tip="{l:T 'Write every edit to the game as you make it, instead of collecting them for Save changes'}" />
             <Border x:Name="PendingPill" Classes="pill pending" VerticalAlignment="Center" IsVisible="{Binding HasPending}">
-              <TextBlock FontWeight="Bold" FontSize="12" Text="{Binding PendingCount, StringFormat='{}{0} pending'}" />
+              <TextBlock FontWeight="Bold" FontSize="12"><Run Text="{Binding PendingCount, Mode=OneWay}" /><Run Text="{l:T ' pending'}" /></TextBlock>
             </Border>
             <Button Command="{Binding DiscardCommand}" IsEnabled="{Binding HasPending}">
               <StackPanel Orientation="Horizontal" Spacing="7">
                 <c:Icon Kind="discard" Size="15" />
-                <TextBlock Text="Discard" />
+                <TextBlock Text="{l:T 'Discard'}" />
               </StackPanel>
             </Button>
             <Button Command="{Binding UndoCommand}" IsEnabled="{Binding CanUndo}">
               <StackPanel Orientation="Horizontal" Spacing="7">
                 <c:Icon Kind="undo" Size="15" />
-                <TextBlock Text="Undo last save" />
+                <TextBlock Text="{l:T 'Undo last save'}" />
               </StackPanel>
             </Button>
             <Button Classes="accent" Command="{Binding SaveCommand}" IsEnabled="{Binding HasPending}" HotKey="Ctrl+S">
               <StackPanel Orientation="Horizontal" Spacing="7">
                 <c:Icon Kind="save" Size="15" />
-                <TextBlock Text="Save changes" />
+                <TextBlock Text="{l:T 'Save changes'}" />
               </StackPanel>
             </Button>
           </StackPanel>
@@ -188,8 +189,8 @@
             <Arc Classes="spinner" s:Motion.Loop="spin" Width="96" Height="96" StrokeThickness="4" />
             <c:Mascot Width="60" Height="60" FollowPointer="False" />
           </Panel>
-          <TextBlock Classes="h2" Text="Reading your save…" HorizontalAlignment="Center" />
-          <TextBlock Classes="muted" Text="Finding Football Manager and walking its database." HorizontalAlignment="Center" />
+          <TextBlock Classes="h2" Text="{l:T 'Reading your save…'}" HorizontalAlignment="Center" />
+          <TextBlock Classes="muted" Text="{l:T 'Finding Football Manager and walking its database.'}" HorizontalAlignment="Center" />
         </StackPanel>
       </Border>
     </Border>

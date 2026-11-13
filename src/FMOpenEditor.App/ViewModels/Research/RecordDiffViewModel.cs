@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FMOpenEditor.Core.Research;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.ViewModels.Research;
 
@@ -24,15 +25,15 @@ public sealed partial class RecordDiffViewModel(ResearchContext context) : Obser
 
     [ObservableProperty] private string? _baseAddress;
     [ObservableProperty] private string _length = "0x400";
-    [ObservableProperty] private string _status = "Enter a record base, take a snapshot, change one thing in the game, take another.";
+    [ObservableProperty] private string _status = Loc.T("Enter a record base, take a snapshot, change one thing in the game, take another.");
     [ObservableProperty] private bool _onlyChangedRows;
     [ObservableProperty] private PointerRow? _selectedPointer;
 
     [RelayCommand]
     private void Snapshot()
     {
-        if (!ResearchFormat.TryHex(BaseAddress, out var b, context)) { Status = "Enter the record base in hex."; return; }
-        if (!ResearchFormat.TryLength(Length, out var len)) { Status = "Enter a length, e.g. 0x400 (max 1 MB)."; return; }
+        if (!ResearchFormat.TryHex(BaseAddress, out var b, context)) { Status = Loc.T("Enter the record base in hex."); return; }
+        if (!ResearchFormat.TryLength(Length, out var len)) { Status = Loc.T("Enter a length, e.g. 0x400 (max 1 MB)."); return; }
 
         var snap = RecordSnapshot.Take(context.Memory, (nint)b, len);
         // A different address or length starts a new comparison.
@@ -40,10 +41,11 @@ public sealed partial class RecordDiffViewModel(ResearchContext context) : Obser
         _current = snap;
         Refresh();
 
-        if (!snap.Readable.Contains(true)) Status = "Nothing readable at that address.";
-        else if (_previous is null) Status = $"Snapshot 1 taken at {snap.Taken:T}. Change one thing in the game, then take another.";
-        else Status = $"Compared {_previous.Taken:T} → {snap.Taken:T}: {Changes.Count} changed run(s). " +
-                      "Values that change on their own (timers, counters) show up too: snapshot again without changing anything to rule them out.";
+        if (!snap.Readable.Contains(true)) Status = Loc.T("Nothing readable at that address.");
+        else if (_previous is null) Status = Loc.F("Snapshot 1 taken at {0:T}. Change one thing in the game, then take another.", snap.Taken);
+        else Status = Loc.F("Compared {0:T} → {1:T}: {2} changed run(s). " +
+                      "Values that change on their own (timers, counters) show up too: snapshot again without changing anything to rule them out.",
+                      _previous.Taken, snap.Taken, Changes.Count);
     }
 
     [RelayCommand]
@@ -53,7 +55,7 @@ public sealed partial class RecordDiffViewModel(ResearchContext context) : Obser
         Rows.Clear();
         Changes.Clear();
         Pointers.Clear();
-        Status = "Cleared.";
+        Status = Loc.T("Cleared.");
     }
 
     partial void OnOnlyChangedRowsChanged(bool value) => RefreshRows();
@@ -97,7 +99,7 @@ public sealed partial class RecordDiffViewModel(ResearchContext context) : Obser
         BaseAddress = ResearchFormat.Hex(p.Target);
         _current = null;
         Snapshot();
-        Status = $"Following pointer at offset {p.OffsetText}: in the definition, fields here use \"path\": [\"{p.OffsetText}\"]. " + Status;
+        Status = Loc.F("Following pointer at offset {0}: in the definition, fields here use \"path\": [\"{0}\"]. ", p.OffsetText) + Status;
     }
 
     public void SetBase(nint address)

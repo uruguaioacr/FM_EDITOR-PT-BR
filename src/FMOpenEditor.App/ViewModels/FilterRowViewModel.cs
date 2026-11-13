@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using FMOpenEditor.Core.Editing;
 using FMOpenEditor.Core.Model;
 using FMOpenEditor.Core.Search;
+using FMOpenEditor.Core.Localization;
 
 namespace FMOpenEditor.App.ViewModels;
 
@@ -9,9 +10,9 @@ public sealed record OpOption(FilterOp Op, string Label)
 {
     public static readonly IReadOnlyList<OpOption> All =
     [
-        new(FilterOp.AtLeast, "at least"), new(FilterOp.AtMost, "at most"), new(FilterOp.Between, "between"),
-        new(FilterOp.Equals, "is"), new(FilterOp.NotEquals, "is not"), new(FilterOp.Contains, "contains"),
-        new(FilterOp.OneOf, "one of (a|b)"), new(FilterOp.IsEmpty, "is empty"), new(FilterOp.IsNotEmpty, "is set"),
+        new(FilterOp.AtLeast, Loc.T("at least")), new(FilterOp.AtMost, Loc.T("at most")), new(FilterOp.Between, Loc.T("between")),
+        new(FilterOp.Equals, Loc.T("is")), new(FilterOp.NotEquals, Loc.T("is not")), new(FilterOp.Contains, Loc.T("contains")),
+        new(FilterOp.OneOf, Loc.T("one of (a|b)")), new(FilterOp.IsEmpty, Loc.T("is empty")), new(FilterOp.IsNotEmpty, Loc.T("is set")),
     ];
 
     public override string ToString() => Label;
