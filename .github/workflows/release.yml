@@ -5,6 +5,8 @@ name: Release
 on:
   push:
     tags: ['v*']
+    # Fork PT-BR: every push to main also publishes a build (v0.3.0-ptbr.N).
+    branches: [main]
   workflow_dispatch:
     inputs:
       tag:
@@ -18,11 +20,11 @@ jobs:
   release:
     runs-on: windows-latest
     env:
-      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      TAG: ${{ github.event.inputs.tag || (github.ref_type == 'tag' && github.ref_name) || format('v0.3.0-ptbr.{0}', github.run_number) }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.TAG }}
+          ref: ${{ github.event.inputs.tag || github.sha }}
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -63,6 +65,7 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG }}
+          target_commitish: ${{ github.sha }}
           name: FM OpenEditor ${{ env.TAG }}
           files: |
             FMOpenEditor-win-x64.zip
